@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    
+    <servlet>
+        <servlet-name>FrontController</servlet-name>
+        <servlet-class>servlet.FrontController</servlet-class>
+        <!-- pour prendre le nom du package a scaner -->
+        <init-param>
+        	<param-name>path</param-name>	
+        	<param-value>controller</param-value>	
+        	<description>dossier a scaner</description>	
+        </init-param>
+
+        <init-param>
+        	<param-name>auth-session-key</param-name>	
+        	<param-value>role</param-value>	
+        	<description>dossier a scaner</description>	
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>FrontController</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+
+</web-app>

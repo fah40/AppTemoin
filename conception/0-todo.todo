@@ -1,0 +1,40 @@
+✔ creer la base de donnees avec le structure aligne @done(25-02-17 08:47)
+✔ creer le package config [ creer et configurer les web.xml ] @done(25-02-17 13:36)
+✔ creer tout les class @done(25-02-17 08:47)
+✔ fonction CRUD pour tout class @done(25-02-17 08:47)
+
+BACK :
+    ☐ ajouter la librairie
+    ☐ creation controller Login
+        ☐ checkLogin(nomUtilisateur, mdp)
+
+    ☐ creation controller Vol
+        ☐ liste avion
+        ☐ liste pays
+        ☐ insert vol
+        ☐ delete vol
+        ☐ annuler vol
+
+BACKOFFICE :
+    ☐ page login
+    ☐ page formulaire d'insertion vol
+        ☐ liste avion
+        ☐ liste pays [ depart ]
+        ☐ liste pays [ destination ]
+        ☐ date limite reservation
+
+        ☐ liste vol avec bouton CRUD
+        ☐ annulation vol [ FALSE ]
+
+FRONTOFFICE :
+    ☐ page formulaire d'insertion reservation
+        ☐ liste vol
+        ☐ type siege
+        ☐ reste count(siege)
+        ☐ check date limite reservation
+        ☐ recherche multicritere [ date - pay ]
+
+
+
+
+

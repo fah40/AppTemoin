@@ -1,0 +1,29 @@
+TABLE
+
+- AVION [nbrsiege(economique,business)]
+- VILLE d'esservie
+- Vol
+- User
+- siege [economique , business]
+- RESERVATION
+
+ERCAN :
+
+- BACKOFFICE
+
+    - LOGIN
+    - CRUD VOL
+    - [Regle de gestion]
+        - promotion par vol (les 3 premier qui reserve auront une promotion de 5%)
+        - Parametrer Reservation (ajout et annulation vol)(date limite reservation avant vol)
+
+- FRONTOFFICE
+
+    - VOL
+        - recherche multi-critaire
+        - Reservation 
+            - vol
+            - prix 
+            - class siege
+            - (promotion ou non)
+
