@@ -4,9 +4,9 @@
 ✔ fonction CRUD pour tout class @done(25-02-17 08:47)
 
 BACK :
-    ☐ ajouter la librairie
-    ☐ creation controller Login
-        ☐ checkLogin(nomUtilisateur, mdp)
+    ✔ ajouter la librairie @done(25-02-17 20:58)
+    ✔ creation controller Login @done(25-02-17 20:58)
+        ✔ checkLogin(nomUtilisateur, mdp) @done(25-02-17 20:58)
 
     ☐ creation controller Vol
         ☐ liste avion
