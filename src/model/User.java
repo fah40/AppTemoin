@@ -13,7 +13,7 @@ public class User {
     private String nom;
     private String email;
     private String password;
-    private RoleType role;
+    private String role;
 
     // Getters et Setters
     public int getId() {
@@ -48,11 +48,11 @@ public class User {
         this.password = password;
     }
 
-    public RoleType getRole() {
+    public String getRole() {
         return role;
     }
 
-    public void setRole(RoleType role) {
+    public void setRole(String role) {
         this.role = role;
     }
 
@@ -60,7 +60,7 @@ public class User {
         PreparedStatement st = null;
 
         try {
-            String query = "INSERT INTO user (nom, email, password, role) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO users (nom, email, password, role) VALUES (?, ?, crypt('?', gen_salt('bf', 8)), ?)";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setString(2, this.email);
@@ -86,7 +86,7 @@ public class User {
         PreparedStatement st = null;
 
         try {
-            String query = "INSERT INTO user (nom, email, password, role) VALUES (?, ?, crypt('?', gen_salt('bf', 8)), ?)";
+            String query = "INSERT INTO users (nom, email, password, role) VALUES (?, ?, crypt('?', gen_salt('bf', 8)), ?)";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setString(2, this.email);
@@ -112,7 +112,7 @@ public class User {
         User instance = null;
 
         try {
-            String query = "SELECT * FROM user WHERE id = ?";
+            String query = "SELECT * FROM users WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
@@ -123,7 +123,7 @@ public class User {
                 instance.setNom(rs.getString("nom"));
                 instance.setEmail(rs.getString("email"));
                 instance.setPassword(rs.getString("password"));
-                instance.setRole(RoleType.valueOf(rs.getString("role")));
+                instance.setRole(rs.getString("role"));
             }
         } finally {
             if (rs != null) rs.close();
@@ -141,7 +141,7 @@ public class User {
         User instance = null;
 
         try {
-            String query = "SELECT * FROM user WHERE id = ?";
+            String query = "SELECT * FROM users WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
@@ -152,7 +152,7 @@ public class User {
                 instance.setNom(rs.getString("nom"));
                 instance.setEmail(rs.getString("email"));
                 instance.setPassword(rs.getString("password"));
-                instance.setRole(RoleType.valueOf(rs.getString("role")));
+                instance.setRole(rs.getString("role"));
             }
         } finally {
             if (rs != null) rs.close();
@@ -170,7 +170,7 @@ public class User {
         List<User> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM user ORDER BY id ASC";
+            String query = "SELECT * FROM users ORDER BY id ASC";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -180,7 +180,7 @@ public class User {
                 item.setNom(rs.getString("nom"));
                 item.setEmail(rs.getString("email"));
                 item.setPassword(rs.getString("password"));
-                item.setRole(RoleType.valueOf(rs.getString("role")));
+                item.setRole(rs.getString("role"));
 
                 items.add(item);
             }
@@ -199,7 +199,7 @@ public class User {
         List<User> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM user ORDER BY id ASC";
+            String query = "SELECT * FROM users ORDER BY id ASC";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -209,7 +209,7 @@ public class User {
                 item.setNom(rs.getString("nom"));
                 item.setEmail(rs.getString("email"));
                 item.setPassword(rs.getString("password"));
-                item.setRole(RoleType.valueOf(rs.getString("role")));
+                item.setRole(rs.getString("role"));
 
                 items.add(item);
             }
@@ -222,40 +222,41 @@ public class User {
         return items.toArray(new User[0]);
     }
 
-    public static User checkLoging(String email, String mdp,Connection con) throws Exception {
+    public static User checkLoging(String email, String mdp, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         User item = null;
-
+    
         try {
-            String query = "SELECT * FROM user where email=? and password = crypt('?', password);";
+            String query = "SELECT * FROM users WHERE email=? AND password = crypt(?, password);";
             st = con.prepareStatement(query);
-            st.setString(0, email);
-            st.setString(0, mdp);
+            st.setString(1, email);
+            st.setString(2, mdp);
             rs = st.executeQuery();
+    
             if (rs.next()) {
                 item = new User();
                 item.setId(rs.getInt("id"));
                 item.setNom(rs.getString("nom"));
                 item.setEmail(rs.getString("email"));
                 item.setPassword(rs.getString("password"));
-                item.setRole(RoleType.valueOf(rs.getString("role")));
+                item.setRole(rs.getString("role"));
             }
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
         }
-
+    
         return item;
     }
+    
 
     public void update() throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
 
         try {
-            String query = "UPDATE user SET nom = ?, email = ?, password = ?, role = ? WHERE id = ?";
+            String query = "UPDATE users SET nom = ?, email = ?, password = ?, role = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setString(2, this.email);
@@ -281,7 +282,7 @@ public class User {
         PreparedStatement st = null;
 
         try {
-            String query = "DELETE FROM user WHERE id = ?";
+            String query = "DELETE FROM users WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
 
@@ -298,12 +299,12 @@ public class User {
         }
     }
 
-    public static User[] search(String nom, String email, RoleType role) throws Exception {
+    public static User[] search(String nom, String email, String role) throws Exception {
         Connection con = null;
         PreparedStatement st = null;
         ResultSet rs = null;
         List<User> items = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT * FROM user WHERE 1=1");
+        StringBuilder query = new StringBuilder("SELECT * FROM users WHERE 1=1");
 
         try {
             // Construction de la requête avec les conditions dynamiques
@@ -343,7 +344,7 @@ public class User {
                 item.setNom(rs.getString("nom"));
                 item.setEmail(rs.getString("email"));
                 item.setPassword(rs.getString("password"));
-                item.setRole(RoleType.valueOf(rs.getString("role")));
+                item.setRole(rs.getString("role"));
 
                 items.add(item);
             }
@@ -359,11 +360,4 @@ public class User {
 
         return items.toArray(new User[0]);
     }
-}
-
-// Enum pour le type de rôle
-enum RoleType {
-    ADMIN,
-    USER,
-    MANAGER
 }

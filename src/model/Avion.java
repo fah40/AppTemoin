@@ -100,6 +100,32 @@ public class Avion {
         return instance;
     }
 
+    public static Avion getById(int id,Connection con) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        Avion instance = null;
+
+        try {
+            String query = "SELECT * FROM avion WHERE id = ?";
+            st = con.prepareStatement(query);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                instance = new Avion();
+                instance.setId(rs.getInt("id"));
+                instance.setModele(rs.getString("modele"));
+                instance.setNbrSiegeEconomique(rs.getInt("nbr_siege_economique"));
+                instance.setNbrSiegeBusiness(rs.getInt("nbr_siege_business"));
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+        }
+
+        return instance;
+    }
+
     public static Avion[] getAll() throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
@@ -124,6 +150,33 @@ public class Avion {
             if (rs != null) rs.close();
             if (st != null) st.close();
             if (con != null && !con.isClosed()) con.close();
+        }
+
+        return items.toArray(new Avion[0]);
+    }
+
+    public static Avion[] getAll(Connection con) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Avion> items = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM avion ORDER BY id ASC";
+            st = con.prepareStatement(query);
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Avion item = new Avion();
+                item.setId(rs.getInt("id"));
+                item.setModele(rs.getString("modele"));
+                item.setNbrSiegeEconomique(rs.getInt("nbr_siege_economique"));
+                item.setNbrSiegeBusiness(rs.getInt("nbr_siege_business"));
+
+                items.add(item);
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
         }
 
         return items.toArray(new Avion[0]);

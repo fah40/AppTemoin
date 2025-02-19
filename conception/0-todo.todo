@@ -8,31 +8,33 @@ BACK :
     ✔ creation controller Login @done(25-02-17 20:58)
         ✔ checkLogin(nomUtilisateur, mdp) @done(25-02-17 20:58)
 
-    ☐ creation controller Vol
-        ☐ liste avion
-        ☐ liste pays
-        ☐ insert vol
-        ☐ delete vol
-        ☐ annuler vol
+    ✔ creation controller Vol @done(25-02-19 11:55)
+        ✔ liste avion @done(25-02-19 11:55)
+        ✔ liste pays @done(25-02-19 11:55)
+        ✔ insert vol @done(25-02-19 11:55)
+        ✔ delete vol @done(25-02-19 11:55)
+        ✔ annuler vol @done(25-02-19 11:55)
 
 BACKOFFICE :
-    ☐ page login
-    ☐ page formulaire d'insertion vol
-        ☐ liste avion
-        ☐ liste pays [ depart ]
-        ☐ liste pays [ destination ]
-        ☐ date limite reservation
+    ✔ page login @done(25-02-19 11:54)
+    ✔ page formulaire d'insertion vol @done(25-02-19 11:55)
+        ✔ liste avion @done(25-02-19 11:55)
+        ✔ liste pays [ depart ] @done(25-02-19 11:55)
+        ✔ liste pays [ destination ] @done(25-02-19 11:55)
+        ✔ date limite reservation @done(25-02-19 11:55)
 
         ☐ liste vol avec bouton CRUD
         ☐ annulation vol [ FALSE ]
 
 FRONTOFFICE :
+    ✔ page login @done(25-02-19 13:46)
+    ☐ redirection vers list vol et insertion reservation
     ☐ page formulaire d'insertion reservation
         ☐ liste vol
         ☐ type siege
         ☐ reste count(siege)
         ☐ check date limite reservation
-        ☐ recherche multicritere [ date - pay ]
+    ☐ recherche multicritere [ date - pay ]
 
 
 

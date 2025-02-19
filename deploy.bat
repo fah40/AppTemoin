@@ -24,8 +24,8 @@ copy .\config .\temp\WEB-INF
 @rem Copy lib to temp
 copy .\lib .\temp\WEB-INF\lib
 
-@rem Copy lib to temp
-copy .\web .\temp
+@rem Copy every files in view directory to temp
+Xcopy web .\temp /E /H /C /I /Y
 
 @rem Définir les chemins source et destination
 set "source_folder=.\src"
@@ -45,5 +45,9 @@ javac -parameters -d .\temp\WEB-INF\classes -cp "lib\*" .\java\*.java
 cd temp
 jar -cvf "%DIRECTORY%.war" *
 copy "%DIRECTORY%.war" "%TOMCAT_PATH%"
+
+cd ..
+rmdir /s /q .\temp
+rmdir /s /q .\java
 
 pause

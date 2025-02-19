@@ -30,17 +30,17 @@ INSERT INTO promotion (id_vol,reduction,nombre_max_reservations) VALUES
 -- verification des sieges
 SELECT * FROM siege WHERE id_vol = 1;  -- AF101
 
-INSERT INTO user (nom, email, password, role) VALUES
+INSERT INTO users (nom, email, password, role) VALUES
 -- Administrateurs
-('Admin Principal', 'admin1@gestionvol.com', SHA2('AdminPass123', 256), 'admin'),
-('Admin Secondaire', 'admin2@gestionvol.com', SHA2('SuperSecurePass', 256), 'admin'),
+('Admin Principal', 'admin1@gestionvol.com', crypt('pass', gen_salt('bf')), 'admin'::role_type),
+('Admin Secondaire', 'admin2@gestionvol.com', crypt('pass', gen_salt('bf')), 'admin'::role_type),
 
 -- Clients
-('Alice Dupont', 'alice.dupont@email.com', SHA2('AlicePass2025', 256), 'client'),
-('Bob Martin', 'bob.martin@email.com', SHA2('BobSecurePass', 256), 'client'),
-('Charlie Renault', 'charlie.renault@email.com', SHA2('CharliePass2025', 256), 'client'),
-('David Smith', 'david.smith@email.com', SHA2('DavidPass2025', 256), 'client'),
-('Emma Wilson', 'emma.wilson@email.com', SHA2('EmmaPass2025', 256), 'client');
+('Alice Dupont', 'alice.dupont@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type),
+('Bob Martin', 'bob.martin@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type),
+('Charlie Renault', 'charlie.renault@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type),
+('David Smith', 'david.smith@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type),
+('Emma Wilson', 'emma.wilson@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type);
 
 -- Réservation 1
 INSERT INTO reservation (id_user, id_vol, id_siege, prix_final)

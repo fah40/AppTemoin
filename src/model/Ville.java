@@ -78,6 +78,30 @@ public class Ville {
         return instance;
     }
 
+    public static Ville getById(int id, Connection con) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        Ville instance = null;
+
+        try {
+            String query = "SELECT * FROM ville WHERE id = ?";
+            st = con.prepareStatement(query);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                instance = new Ville();
+                instance.setId(rs.getInt("id"));
+                instance.setNom(rs.getString("nom"));
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
+        }
+
+        return instance;
+    }
+
     public static Ville[] getAll() throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
@@ -100,6 +124,31 @@ public class Ville {
             if (rs != null) rs.close();
             if (st != null) st.close();
             if (con != null && !con.isClosed()) con.close();
+        }
+
+        return items.toArray(new Ville[0]);
+    }
+
+    public static Ville[] getAll(Connection con) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Ville> items = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM ville ORDER BY id ASC";
+            st = con.prepareStatement(query);
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Ville item = new Ville();
+                item.setId(rs.getInt("id"));
+                item.setNom(rs.getString("nom"));
+
+                items.add(item);
+            }
+        } finally {
+            if (rs != null) rs.close();
+            if (st != null) st.close();
         }
 
         return items.toArray(new Ville[0]);

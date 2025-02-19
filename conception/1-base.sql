@@ -1,14 +1,14 @@
--- Création des types ENUM pour PostgreSQL
-CREATE TYPE role_type AS ENUM ('admin', 'client');
+CREATE DATABASE gestion_vol;
+\c gestion_vol;
+
+CREATE TYPE role_type AS ENUM ('admin', 'client', 'user');
 CREATE TYPE siege_type AS ENUM ('economique', 'business');
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 -- Création des tables
 
-CREATE DATABASE gestion_vol;
-\c gestion_vol; -- Connexion à la base de données gestion_vol
 
 -- Table des utilisateurs (Clients et Administrateurs)
-CREATE TABLE user (
+CREATE TABLE users (
     id serial PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -30,6 +30,7 @@ CREATE TABLE avion (
     nbr_siege_business INT NOT NULL
 );
 
+CREATE SEQUENCE vol_ref START WITH 1 INCREMENT BY 1;
 -- Table des vols
 CREATE TABLE vol (
     id serial PRIMARY KEY,
@@ -41,6 +42,8 @@ CREATE TABLE vol (
     date_arrivee TIMESTAMP NOT NULL, -- Utilisation de TIMESTAMP au lieu de DATETIME
     prix_economique DECIMAL(12,2) NOT NULL,
     prix_business DECIMAL(12,2) NOT NULL,
+    date_limite_reservation TIMESTAMP NOT NULL, -- Utilisation de TIMESTAMP au lieu de DATETIME
+    disponible BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_avion) REFERENCES avion(id),
     FOREIGN KEY (id_ville_depart) REFERENCES ville(id),
     FOREIGN KEY (id_ville_arrivee) REFERENCES ville(id)
@@ -64,7 +67,7 @@ CREATE TABLE reservation (
     id_siege INT NOT NULL UNIQUE,
     prix_final DECIMAL(12,2) NOT NULL,
     date_reservation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Utilisation de TIMESTAMP au lieu de DATETIME
-    FOREIGN KEY (id_user) REFERENCES user(id),
+    FOREIGN KEY (id_user) REFERENCES users(id),
     FOREIGN KEY (id_vol) REFERENCES vol(id),
     FOREIGN KEY (id_siege) REFERENCES siege(id)
 );

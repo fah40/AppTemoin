@@ -11,10 +11,10 @@ import model.*;
 @Controller
 public class LoginController {
     MySession session = new MySession();
-    
+
     @Post
-    @Url(url = "TestSprint/login")
-    @RootPath(path = "login.jsp")
+    @Url(url = "AppTemoin/login")
+    @RootPage(path = "login.jsp")
     public ModelView checkLog(@RequestParam(value = "email") String email, @RequestParam(value = "mdp") String mdp)
             throws Exception {
         ModelView model= new ModelView();
@@ -25,7 +25,16 @@ public class LoginController {
         if ( userConnect != null) {
             session.add("role", userConnect.getRole());
             session.add("user", userConnect);
-            model.setUrl("acceuil.jsp");
+            
+            model.addObject("listAvion", Avion.getAll(con));
+            model.addObject("listVille", Ville.getAll(con));
+            model.addObject("listVol", Vol.getAll(con));
+
+            if (userConnect.getRole().compareTo("admin") == 0) {
+                model.setUrl("vol.jsp");
+            }else{
+                model.setUrl("reservation.jsp");
+            }
         }
         
         return model;
