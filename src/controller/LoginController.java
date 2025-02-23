@@ -3,7 +3,7 @@ package controller;
 import java.sql.Connection;
 
 import annotation.*;
-import bd.MyConnect;
+import db.MyConnect;
 import models.*;
 import util.MySession;
 import model.*;
@@ -20,7 +20,7 @@ public class LoginController {
         ModelView model= new ModelView();
         model.setUrl("login.jsp");
         Connection con= MyConnect.getConnection();
-        User userConnect= User.checkLoging(email, mdp, con); 
+        User userConnect= User.checkLogin(email, mdp, con); 
         
         if ( userConnect != null) {
             session.add("role", userConnect.getRole());

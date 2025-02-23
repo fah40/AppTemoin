@@ -1,197 +1,227 @@
 package model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import annotation.Min;
-import annotation.NotNull;
-import bd.MyConnect;
+import java.sql.*;
+import java.util.*;
+import db.MyConnect;
+import use.*;
 
 public class Vol {
     private int id;
-    @NotNull
+    private String numero_vol;
     private int idAvion;
-    @NotNull
-    private int idVilleDepart;
-    @NotNull
-    private int idVilleArrivee;
-    private String numeroVol;
-    @NotNull
-    private Timestamp dateDepart;
-    @NotNull
-    private Timestamp dateArrivee;
-    @Min(value = 50000)
-    private double prixEconomique;
-    @Min(value = 50000)
-    private double prixBusiness;
+    private int id_ville_depart;
+    private int id_ville_arrivee;
+    private java.sql.Timestamp date_depart;
+    private java.sql.Timestamp date_arrivee;
+    private double prix_economique;
+    private double prix_business;
+    private java.sql.Timestamp date_limite_reservation;
+    private boolean disponible;
+    private Avion avion;
+    private Ville ville_depart;
+    private Ville ville_arrivee;
 
-    @NotNull
-    private Timestamp dateLimit;
-    
-    public Timestamp getDateLimit() {
-        return dateLimit;
+    public Vol() {
     }
 
-    public void setDateLimit(Timestamp dateLimit) {
-        this.dateLimit = dateLimit;
+    public Vol(String numero_vol, String avion, String ville_depart, String ville_arrivee, String date_depart,
+            String date_arrivee, String prix_economique, String prix_business, String date_limite_reservation,
+            String disponible, Connection con) throws Exception {
+        setNumero_vol(numero_vol);
+        setAvion(avion, con);
+        setVille_depart(ville_depart, con);
+        setVille_arrivee(ville_arrivee, con);
+        setDate_depart(date_depart);
+        setDate_arrivee(date_arrivee);
+        setPrix_economique(prix_economique);
+        setPrix_business(prix_business);
+        setDate_limite_reservation(date_limite_reservation);
+        setDisponible(disponible);
     }
 
-    private Avion avion;    
-    private Ville villeDepart;
-    private Ville villeArrivee;
-    
     public int getIdAvion() {
         return idAvion;
     }
 
-    public void setIdAvion(int idAvion) throws Exception {
+    public void setIdAvion(int idAvion) {
         this.idAvion = idAvion;
     }
 
-    public int getIdVilleDepart() {
-        return idVilleDepart;
+    public int getId_ville_depart() {
+        return id_ville_depart;
     }
 
-    public void setIdVilleDepart(int idVilleDepart) {
-        this.idVilleDepart = idVilleDepart;
+    public void setId_ville_depart(int id_ville_depart) {
+        this.id_ville_depart = id_ville_depart;
     }
 
-    public int getIdVilleArrivee() {
-        return idVilleArrivee;
+    public int getId_ville_arrivee() {
+        return id_ville_arrivee;
     }
 
-    public void setIdVilleArrivee(int idVilleArrivee) {
-        this.idVilleArrivee = idVilleArrivee;
+    public void setId_ville_arrivee(int id_ville_arrivee) {
+        this.id_ville_arrivee = id_ville_arrivee;
     }
 
-    public Ville getVilleDepart() {
-        return villeDepart;
-    }
-
-    public void setVilleDepart(Ville villeDepart) {
-        this.villeDepart = villeDepart;
-    }
-
-    public Ville getVilleArrivee() {
-        return villeArrivee;
-    }
-
-    public void setVilleArrivee(Ville villeArrivee) {
-        this.villeArrivee = villeArrivee;
-    }
-    public Avion getAvion() {
-        return avion;
-    }
-
-    public void setAvion(Avion avion) {
-        this.avion = avion;
-    }
-    // Getters et Setters
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id) throws Exception {
+        MyUtil.verifyNumericPostive(id, "id");
         this.id = id;
     }
 
-    public String getNumeroVol() {
-        return numeroVol;
+    public void setId(String id) throws Exception {
+        int toSet = MyUtil.convertIntFromHtmlInput(id);
+
+        setId(toSet);
     }
 
-    public void setNumeroVol(String numeroVol) {
-        this.numeroVol = numeroVol;
+    public String getNumero_vol() {
+        return numero_vol;
     }
 
-    public Timestamp getDateDepart() {
-        return dateDepart;
+    public void setNumero_vol(String numero_vol) throws Exception {
+        MyUtil.verifyStringNotNullOrEmpty(numero_vol, "numero_vol");
+        this.numero_vol = numero_vol;
     }
 
-    public void setDateDepart(Timestamp dateDepart) {
-        this.dateDepart = dateDepart;
+    public Avion getAvion() {
+        return avion;
     }
 
-    public Timestamp getDateArrivee() {
-        return dateArrivee;
+    public void setAvion(Avion avion) throws Exception {
+        this.avion = avion;
     }
 
-    public void setDateArrivee(Timestamp dateArrivee) {
-        this.dateArrivee = dateArrivee;
+    public void setAvion(String avion, Connection con) throws Exception {
+        // define how this type should be conterted from String ... type : Avion
+        Avion toSet = Avion.getById(Integer.parseInt(avion), con);
+
+        setAvion(toSet);
     }
 
-    public double getPrixEconomique() {
-        return prixEconomique;
+    public Ville getVille_depart() {
+        return ville_depart;
     }
 
-    public void setPrixEconomique(double prixEconomique) {
-        this.prixEconomique = prixEconomique;
+    public void setVille_depart(Ville ville_depart) throws Exception {
+        this.ville_depart = ville_depart;
     }
 
-    public double getPrixBusiness() {
-        return prixBusiness;
+    public void setVille_depart(String ville_depart, Connection con) throws Exception {
+        // define how this type should be conterted from String ... type : Ville
+        Ville toSet = Ville.getById(Integer.parseInt(ville_depart), con);
+
+        setVille_depart(toSet);
     }
 
-    public void setPrixBusiness(double prixBusiness) {
-        this.prixBusiness = prixBusiness;
+    public Ville getVille_arrivee() {
+        return ville_arrivee;
     }
 
-    // Méthodes pour les opérations CRUD
-    public void insert() throws Exception {
-        Connection con = MyConnect.getConnection();
-
-            try {
-                insert(con);
-                con.commit();
-            } catch (Exception e) {
-                con.rollback();
-                throw new Exception("Échec de l'insertion du vol", e);
-            }finally {
-            if (con != null && !con.isClosed()) con.close();
-        }
+    public void setVille_arrivee(Ville ville_arrivee) throws Exception {
+        this.ville_arrivee = ville_arrivee;
     }
 
-    public void insert(Connection con) throws Exception {
-        PreparedStatement st = null;
+    public void setVille_arrivee(String ville_arrivee, Connection con) throws Exception {
+        // define how this type should be conterted from String ... type : Ville
+        Ville toSet = Ville.getById(Integer.parseInt(ville_arrivee), con);
 
-        try {
-            this.avion = Avion.getById(idAvion,con);
-            this.villeDepart = Ville.getById(idVilleDepart,con);
-            this.villeArrivee = Ville.getById(idVilleArrivee,con);
-
-            String query = "INSERT INTO vol (numero_vol, id_avion, id_ville_depart, id_ville_arrivee, date_depart, date_arrivee, prix_economique, prix_business,date_limite_reservation) VALUES ('VOL-N-' || NEXTVAL('vol_ref'), ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            System.out.println("Irina test  : " + query);
-
-            System.out.println(this.toString());    
-
-            st = con.prepareStatement(query);
-            st.setInt(1, avion.getId());
-            st.setInt(2, villeDepart.getId());
-            st.setInt(3, villeArrivee.getId());
-            st.setTimestamp(4, this.dateDepart);
-            st.setTimestamp(5, this.dateArrivee);
-            st.setDouble(6, this.prixEconomique);
-            st.setDouble(7, this.prixBusiness);
-            st.setTimestamp(8, this.dateLimit);
-
-            try {
-                st.executeUpdate();
-                con.commit();
-            } catch (Exception e) {
-                con.rollback();
-                throw new Exception("Échec de l'insertion du vol", e);
-            }
-        } finally {
-            if (st != null) st.close();
-        }
+        setVille_arrivee(toSet);
     }
 
-    public static Vol getById(int id) throws Exception {
-        Connection con = MyConnect.getConnection();
+    public java.sql.Timestamp getDate_depart() {
+        return date_depart;
+    }
+
+    public void setDate_depart(java.sql.Timestamp date_depart) throws Exception {
+        MyUtil.verifyObjectNotNull(date_depart, "date_depart");
+        this.date_depart = date_depart;
+    }
+
+    public void setDate_depart(String date_depart) throws Exception {
+        java.sql.Timestamp toSet = MyUtil.convertTimestampFromHtmlInput(date_depart);
+
+        setDate_depart(toSet);
+    }
+
+    public java.sql.Timestamp getDate_arrivee() {
+        return date_arrivee;
+    }
+
+    public void setDate_arrivee(java.sql.Timestamp date_arrivee) throws Exception {
+        MyUtil.verifyObjectNotNull(date_arrivee, "date_arrivee");
+        this.date_arrivee = date_arrivee;
+    }
+
+    public void setDate_arrivee(String date_arrivee) throws Exception {
+        java.sql.Timestamp toSet = MyUtil.convertTimestampFromHtmlInput(date_arrivee);
+
+        setDate_arrivee(toSet);
+    }
+
+    public double getPrix_economique() {
+        return prix_economique;
+    }
+
+    public void setPrix_economique(double prix_economique) throws Exception {
+        MyUtil.verifyNumericPostive(prix_economique, "prix_economique");
+        this.prix_economique = prix_economique;
+    }
+
+    public void setPrix_economique(String prix_economique) throws Exception {
+        double toSet = MyUtil.convertDoubleFromHtmlInput(prix_economique);
+
+        setPrix_economique(toSet);
+    }
+
+    public double getPrix_business() {
+        return prix_business;
+    }
+
+    public void setPrix_business(double prix_business) throws Exception {
+        MyUtil.verifyNumericPostive(prix_business, "prix_business");
+        this.prix_business = prix_business;
+    }
+
+    public void setPrix_business(String prix_business) throws Exception {
+        double toSet = MyUtil.convertDoubleFromHtmlInput(prix_business);
+
+        setPrix_business(toSet);
+    }
+
+    public java.sql.Timestamp getDate_limite_reservation() {
+        return date_limite_reservation;
+    }
+
+    public void setDate_limite_reservation(java.sql.Timestamp date_limite_reservation) throws Exception {
+        MyUtil.verifyObjectNotNull(date_limite_reservation, "date_limite_reservation");
+        this.date_limite_reservation = date_limite_reservation;
+    }
+
+    public void setDate_limite_reservation(String date_limite_reservation) throws Exception {
+        java.sql.Timestamp toSet = MyUtil.convertTimestampFromHtmlInput(date_limite_reservation);
+
+        setDate_limite_reservation(toSet);
+    }
+
+    public boolean getDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(boolean disponible) throws Exception {
+        this.disponible = disponible;
+    }
+
+    public void setDisponible(String disponible) throws Exception {
+        boolean toSet = MyUtil.convertBooleanFromCheckBox(disponible);
+
+        setDisponible(toSet);
+    }
+
+    public static Vol getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Vol instance = null;
@@ -205,20 +235,24 @@ public class Vol {
             if (rs.next()) {
                 instance = new Vol();
                 instance.setId(rs.getInt("id"));
-                instance.setNumeroVol(rs.getString("numero_vol"));
-                instance.setAvion(Avion.getById(rs.getInt("id_avion")));
-                instance.setVilleDepart(Ville.getById(rs.getInt("id_ville_depart")));
-                instance.setVilleArrivee(Ville.getById(rs.getInt("id_ville_arrivee")));
-                instance.setDateDepart(rs.getTimestamp("date_depart"));
-                instance.setDateArrivee(rs.getTimestamp("date_arrivee"));
-                instance.setPrixEconomique(rs.getDouble("prix_economique"));
-                instance.setPrixBusiness(rs.getDouble("prix_business"));
-                instance.setDateLimit(rs.getTimestamp("date_limite_reservation"));
+                instance.setNumero_vol(rs.getString("numero_vol"));
+                instance.setAvion(Avion.getById(rs.getInt("id_avion"), con));
+                instance.setVille_depart(Ville.getById(rs.getInt("id_ville_depart"), con));
+                instance.setVille_arrivee(Ville.getById(rs.getInt("id_ville_arrivee"), con));
+                instance.setDate_depart(rs.getTimestamp("date_depart"));
+                instance.setDate_arrivee(rs.getTimestamp("date_arrivee"));
+                instance.setPrix_economique(rs.getDouble("prix_economique"));
+                instance.setPrix_business(rs.getDouble("prix_business"));
+                instance.setDate_limite_reservation(rs.getTimestamp("date_limite_reservation"));
+                instance.setDisponible(rs.getBoolean("disponible"));
             }
+        } catch (Exception e) {
+            throw e;
         } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
         }
 
         return instance;
@@ -230,212 +264,134 @@ public class Vol {
         List<Vol> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM vol ORDER BY id ASC";
+            String query = "SELECT * FROM vol order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
             while (rs.next()) {
                 Vol item = new Vol();
                 item.setId(rs.getInt("id"));
-                item.setNumeroVol(rs.getString("numero_vol"));
-                item.setAvion(Avion.getById(rs.getInt("id_avion")));
-                item.setIdAvion(rs.getInt("id_avion"));
-                item.setVilleDepart(Ville.getById(rs.getInt("id_ville_depart")));
-                item.setIdVilleDepart(rs.getInt("id_ville_depart"));
-                item.setVilleArrivee(Ville.getById(rs.getInt("id_ville_arrivee")));
-                item.setIdVilleArrivee(rs.getInt("id_ville_arrivee"));
-                item.setDateDepart(rs.getTimestamp("date_depart"));
-                item.setDateArrivee(rs.getTimestamp("date_arrivee"));
-                item.setPrixEconomique(rs.getDouble("prix_economique"));
-                item.setPrixBusiness(rs.getDouble("prix_business"));
-                item.setDateLimit(rs.getTimestamp("date_limite_reservation"));
-
+                item.setNumero_vol(rs.getString("numero_vol"));
+                item.setAvion(Avion.getById(rs.getInt("id_avion"), con));
+                item.setVille_depart(Ville.getById(rs.getInt("id_ville_depart"), con));
+                item.setVille_arrivee(Ville.getById(rs.getInt("id_ville_arrivee"), con));
+                item.setDate_depart(rs.getTimestamp("date_depart"));
+                item.setDate_arrivee(rs.getTimestamp("date_arrivee"));
+                item.setPrix_economique(rs.getDouble("prix_economique"));
+                item.setPrix_business(rs.getDouble("prix_business"));
+                item.setDate_limite_reservation(rs.getTimestamp("date_limite_reservation"));
+                item.setDisponible(rs.getBoolean("disponible"));
                 items.add(item);
             }
+        } catch (Exception e) {
+            throw e;
         } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
         }
 
         return items.toArray(new Vol[0]);
     }
 
-    public static Vol[] getAll() throws Exception {
-        Connection con = MyConnect.getConnection();
+    public void insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
-        List<Vol> items = new ArrayList<>();
-
         try {
-            String query = "SELECT * FROM vol ORDER BY id ASC";
+            String query = "INSERT INTO vol (numero_vol, id_avion, id_ville_depart, id_ville_arrivee, date_depart, date_arrivee, prix_economique, prix_business, date_limite_reservation) " +
+                           "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id"; // Ajout de RETURNING id
+    
             st = con.prepareStatement(query);
+            String numeroVol = "VOL-N-" + getNextVolNumber(con); // Gérer la génération en Java
+            st.setString(1, numeroVol);
+            st.setInt(2, this.idAvion);
+            st.setInt(3, this.id_ville_depart);
+            st.setInt(4, this.id_ville_arrivee);
+            st.setTimestamp(5, this.date_depart);
+            st.setTimestamp(6, this.date_arrivee);
+            st.setDouble(7, this.prix_economique);
+            st.setDouble(8, this.prix_business);
+            st.setTimestamp(9, this.date_limite_reservation);
+    
             rs = st.executeQuery();
-
-            while (rs.next()) {
-                Vol item = new Vol();
-                item.setId(rs.getInt("id"));
-                item.setNumeroVol(rs.getString("numero_vol"));
-                item.setAvion(Avion.getById(rs.getInt("id_avion")));
-                item.setVilleDepart(Ville.getById(rs.getInt("id_ville_depart")));
-                item.setVilleArrivee(Ville.getById(rs.getInt("id_ville_arrivee")));
-                item.setDateDepart(rs.getTimestamp("date_depart"));
-                item.setDateArrivee(rs.getTimestamp("date_arrivee"));
-                item.setPrixEconomique(rs.getDouble("prix_economique"));
-                item.setPrixBusiness(rs.getDouble("prix_business"));
-                item.setDateLimit(rs.getTimestamp("date_limite_reservation"));
-
-                items.add(item);
+            if (rs.next()) {
+                this.setId(rs.getInt("id"));
+                con.commit();
+            } else {
+                con.rollback();
+                throw new Exception("Failed to retrieve generated ID");
             }
+        } catch (Exception e) {
+            con.rollback();
+            throw new Exception("Failed to insert record", e);
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
         }
-
-        return items.toArray(new Vol[0]);
     }
+    
+    // Fonction pour récupérer le prochain numéro de vol
+    private int getNextVolNumber(Connection con) throws SQLException {
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery("SELECT NEXTVAL('vol_ref')");
+        int nextVal = rs.next() ? rs.getInt(1) : 1;
+        rs.close();
+        st.close();
+        return nextVal;
+    }
+    
 
-    public void update() throws Exception {
-        Connection con = MyConnect.getConnection();
+    public void update(Connection con) throws Exception {
         PreparedStatement st = null;
-
         try {
-            String query = "UPDATE vol SET numero_vol = ?, id_avion = ?, id_ville_depart = ?, id_ville_arrivee = ?, date_depart = ?, date_arrivee = ?, prix_economique = ?, prix_business = ? WHERE id = ?";
+            String query = "UPDATE vol SET numero_vol = ?, id_avion = ?, id_ville_depart = ?, id_ville_arrivee = ?, date_depart = ?, date_arrivee = ?, prix_economique = ?, prix_business = ?, date_limite_reservation = ?, disponible = ? WHERE id = ?";
             st = con.prepareStatement(query);
-            st.setString(1, this.numeroVol);
-            st.setInt(2, avion.getId());
-            st.setInt(3, villeDepart.getId());
-            st.setInt(4, villeArrivee.getId());
-            st.setTimestamp(5, this.dateDepart);
-            st.setTimestamp(6, this.dateArrivee);
-            st.setDouble(7, this.prixEconomique);
-            st.setDouble(8, this.prixBusiness);
-            st.setInt(9, this.id);
-
+            st.setString(1, this.numero_vol);
+            st.setInt(2, this.avion.getId());
+            st.setInt(3, this.ville_depart.getId());
+            st.setInt(4, this.ville_arrivee.getId());
+            st.setTimestamp(5, this.date_depart);
+            st.setTimestamp(6, this.date_arrivee);
+            st.setDouble(7, this.prix_economique);
+            st.setDouble(8, this.prix_business);
+            st.setTimestamp(9, this.date_limite_reservation);
+            st.setBoolean(10, this.disponible);
+            st.setInt(11, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();
             } catch (Exception e) {
                 con.rollback();
-                throw new Exception("Échec de la mise à jour du vol", e);
+                throw new Exception("Failed to update record", e);
             }
         } finally {
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+            if (st != null)
+                st.close();
         }
     }
 
     public static void deleteById(int id) throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
-
         try {
             String query = "DELETE FROM vol WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
-
             try {
                 st.executeUpdate();
                 con.commit();
             } catch (Exception e) {
                 con.rollback();
-                throw new Exception("Échec de la suppression du vol", e);
+                throw new Exception("Failed to delete record", e);
             }
         } finally {
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+            if (st != null)
+                st.close();
+            if (con != null)
+                con.close();
         }
-    }
-
-    public static Vol[] search(String numeroVol, Integer idAvion, Integer idVilleDepart, Integer idVilleArrivee, Timestamp dateDepart, Timestamp dateArrivee) throws Exception {
-        Connection con = null;
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        List<Vol> items = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT * FROM vol WHERE 1=1");
-
-        try {
-            // Construction de la requête avec les conditions dynamiques
-            if (numeroVol != null && !numeroVol.isEmpty()) {
-                query.append(" AND numero_vol LIKE ?");
-            }
-            if (idAvion != null) {
-                query.append(" AND id_avion = ?");
-            }
-            if (idVilleDepart != null) {
-                query.append(" AND id_ville_depart = ?");
-            }
-            if (idVilleArrivee != null) {
-                query.append(" AND id_ville_arrivee = ?");
-            }
-            if (dateDepart != null) {
-                query.append(" AND date_depart >= ?");
-            }
-            if (dateArrivee != null) {
-                query.append(" AND date_arrivee <= ?");
-            }
-
-            // Connexion à la base de données
-            con = MyConnect.getConnection();
-            st = con.prepareStatement(query.toString());
-
-            // Définition des paramètres dans la requête
-            int paramIndex = 1;
-            if (numeroVol != null && !numeroVol.isEmpty()) {
-                st.setString(paramIndex++, "%" + numeroVol + "%");
-            }
-            if (idAvion != null) {
-                st.setInt(paramIndex++, idAvion);
-            }
-            if (idVilleDepart != null) {
-                st.setInt(paramIndex++, idVilleDepart);
-            }
-            if (idVilleArrivee != null) {
-                st.setInt(paramIndex++, idVilleArrivee);
-            }
-            if (dateDepart != null) {
-                st.setTimestamp(paramIndex++, dateDepart);
-            }
-            if (dateArrivee != null) {
-                st.setTimestamp(paramIndex++, dateArrivee);
-            }
-
-            // Exécution de la requête
-            rs = st.executeQuery();
-
-            // Traitement des résultats
-            while (rs.next()) {
-                // Vol item = new Vol();
-                // item.setId(rs.getInt("id"));
-                // item.setNumeroVol(rs.getString("numero_vol"));
-                // item.setIdAvion(rs.getInt("id_avion"));
-                // item.setIdVilleDepart(rs.getInt("id_ville_depart"));
-                // item.setIdVilleArrivee(rs.getInt("id_ville_arrivee"));
-                // item.setDateDepart(rs.getTimestamp("date_depart"));
-                // item.setDateArrivee(rs.getTimestamp("date_arrivee"));
-                // item.setPrixEconomique(rs.getDouble("prix_economique"));
-                // item.setPrixBusiness(rs.getDouble("prix_business"));
-
-                // items.add(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("Erreur lors de la recherche des vols : " + e.getMessage());
-        } finally {
-            // Fermeture des ressources
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
-        }
-
-        return items.toArray(new Vol[0]);
-    }
-
-    @Override
-    public String toString() {
-        return "Vol [id=" + id + ", idAvion=" + idAvion + ", idVilleDepart=" + idVilleDepart + ", idVilleArrivee="
-                + idVilleArrivee + ", numeroVol=" + numeroVol + ", dateDepart=" + dateDepart + ", dateArrivee="
-                + dateArrivee + ", prixEconomique=" + prixEconomique + ", prixBusiness=" + prixBusiness + ", avion="
-                + avion + ", villeDepart=" + villeDepart + ", villeArrivee=" + villeArrivee + "]";
     }
 }
+
+// Commun'IT app

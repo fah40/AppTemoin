@@ -6,9 +6,9 @@
         <servlet-class>servlet.FrontController</servlet-class>
         <!-- pour prendre le nom du package a scaner -->
         <init-param>
-        	<param-name>path</param-name>	
-        	<param-value>controller</param-value>	
-        	<description>dossier a scaner</description>	
+        	<param-name>path</param-name>
+        	<param-value>controller</param-value>
+        	<description>dossier a scaner</description>
         </init-param>
 
         <init-param>

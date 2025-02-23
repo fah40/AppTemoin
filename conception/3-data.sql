@@ -32,15 +32,15 @@ SELECT * FROM siege WHERE id_vol = 1;  -- AF101
 
 INSERT INTO users (nom, email, password, role) VALUES
 -- Administrateurs
-('Admin Principal', 'admin1@gestionvol.com', crypt('pass', gen_salt('bf')), 'admin'::role_type),
-('Admin Secondaire', 'admin2@gestionvol.com', crypt('pass', gen_salt('bf')), 'admin'::role_type),
+('Admin Principal', 'admin1@gestionvol.com', crypt('pass', gen_salt('bf')), 'admin'),
+('Admin Secondaire', 'admin2@gestionvol.com', crypt('pass', gen_salt('bf')), 'admin'),
 
 -- Clients
-('Alice Dupont', 'alice.dupont@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type),
-('Bob Martin', 'bob.martin@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type),
-('Charlie Renault', 'charlie.renault@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type),
-('David Smith', 'david.smith@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type),
-('Emma Wilson', 'emma.wilson@email.com', crypt('pass', gen_salt('bf')), 'client'::role_type);
+('Alice Dupont', 'alice.dupont@email.com', crypt('pass', gen_salt('bf')), 'client'),
+('Bob Martin', 'bob.martin@email.com', crypt('pass', gen_salt('bf')), 'client'),
+('Charlie Renault', 'charlie.renault@email.com', crypt('pass', gen_salt('bf')), 'client'),
+('David Smith', 'david.smith@email.com', crypt('pass', gen_salt('bf')), 'client'),
+('Emma Wilson', 'emma.wilson@email.com', crypt('pass', gen_salt('bf')), 'client');
 
 -- Réservation 1
 INSERT INTO reservation (id_user, id_vol, id_siege, prix_final)

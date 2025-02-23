@@ -1,99 +1,123 @@
 package model;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import bd.MyConnect;
+import java.sql.*;
+import java.util.*;
+import db.MyConnect;
+import use.*;
 
 public class Reservation {
     private int id;
-    private int idUser;
-    private int idVol;
-    private int idSiege;
-    private double prixFinal;
-    private Timestamp dateReservation;
+    private int id_user;
+    private int id_vol;
+    private int nombre;
+    private java.sql.Timestamp date_reservation;
 
-    // Getters et Setters
+    private User user;
+    private Vol vol;
+
+    public Reservation() {
+    }
+
+    public Reservation(String user, String vol, String nombre, String date_reservation, Connection con)
+            throws Exception {
+        setUser(user, con);
+        setVol(vol, con);
+        setNombre(nombre);
+        setDate_reservation(date_reservation);
+    }
+
+    public int getId_user() {
+        return id_user;
+    }
+
+    public void setId_user(int id_user) {
+        this.id_user = id_user;
+    }
+
+    public int getId_vol() {
+        return id_vol;
+    }
+
+    public void setId_vol(int id_vol) {
+        this.id_vol = id_vol;
+    }
+
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id) throws Exception {
+        MyUtil.verifyNumericPostive(id, "id");
         this.id = id;
     }
 
-    public int getIdUser() {
-        return idUser;
+    public void setId(String id) throws Exception {
+        int toSet = MyUtil.convertIntFromHtmlInput(id);
+
+        setId(toSet);
     }
 
-    public void setIdUser(int idUser) {
-        this.idUser = idUser;
+    public User getUser() {
+        return user;
     }
 
-    public int getIdVol() {
-        return idVol;
+    public void setUser(User user) throws Exception {
+        this.user = user;
     }
 
-    public void setIdVol(int idVol) {
-        this.idVol = idVol;
+    public void setUser(String user, Connection con) throws Exception {
+        // define how this type should be conterted from String ... type : Users
+        User toSet = User.getById(Integer.parseInt(user), con);
+
+        setUser(toSet);
     }
 
-    public int getIdSiege() {
-        return idSiege;
+    public Vol getVol() {
+        return vol;
     }
 
-    public void setIdSiege(int idSiege) {
-        this.idSiege = idSiege;
+    public void setVol(Vol vol) throws Exception {
+        this.vol = vol;
     }
 
-    public double getPrixFinal() {
-        return prixFinal;
+    public void setVol(String vol, Connection con) throws Exception {
+        // define how this type should be conterted from String ... type : Vol
+        Vol toSet = Vol.getById(Integer.parseInt(vol), con);
+
+        setVol(toSet);
     }
 
-    public void setPrixFinal(double prixFinal) {
-        this.prixFinal = prixFinal;
+    public int getNombre() {
+        return nombre;
     }
 
-    public Timestamp getDateReservation() {
-        return dateReservation;
+    public void setNombre(int nombre) throws Exception {
+        MyUtil.verifyNumericPostive(nombre, "nombre");
+        this.nombre = nombre;
     }
 
-    public void setDateReservation(Timestamp dateReservation) {
-        this.dateReservation = dateReservation;
+    public void setNombre(String nombre) throws Exception {
+        int toSet = MyUtil.convertIntFromHtmlInput(nombre);
+
+        setNombre(toSet);
     }
 
-    // Méthodes pour les opérations CRUD
-    public void insert() throws Exception {
-        Connection con = MyConnect.getConnection();
-        PreparedStatement st = null;
-
-        try {
-            String query = "INSERT INTO reservation (id_user, id_vol, id_siege, prix_final) VALUES (?, ?, ?, ?)";
-            st = con.prepareStatement(query);
-            st.setInt(1, this.idUser);
-            st.setInt(2, this.idVol);
-            st.setInt(3, this.idSiege);
-            st.setDouble(4, this.prixFinal);
-
-            try {
-                st.executeUpdate();
-                con.commit();
-            } catch (Exception e) {
-                con.rollback();
-                throw new Exception("Échec de l'insertion de la réservation", e);
-            }
-        } finally {
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
-        }
+    public java.sql.Timestamp getDate_reservation() {
+        return date_reservation;
     }
 
-    public static Reservation getById(int id) throws Exception {
-        Connection con = MyConnect.getConnection();
+    public void setDate_reservation(java.sql.Timestamp date_reservation) throws Exception {
+        MyUtil.verifyObjectNotNull(date_reservation, "date_reservation");
+        this.date_reservation = date_reservation;
+    }
+
+    public void setDate_reservation(String date_reservation) throws Exception {
+        java.sql.Timestamp toSet = MyUtil.convertTimestampFromHtmlInput(date_reservation);
+
+        setDate_reservation(toSet);
+    }
+
+    public static Reservation getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Reservation instance = null;
@@ -107,172 +131,132 @@ public class Reservation {
             if (rs.next()) {
                 instance = new Reservation();
                 instance.setId(rs.getInt("id"));
-                instance.setIdUser(rs.getInt("id_user"));
-                instance.setIdVol(rs.getInt("id_vol"));
-                instance.setIdSiege(rs.getInt("id_siege"));
-                instance.setPrixFinal(rs.getDouble("prix_final"));
-                instance.setDateReservation(rs.getTimestamp("date_reservation"));
+                instance.setUser(User.getById(rs.getInt("id_user"), con));
+                instance.setVol(Vol.getById(rs.getInt("id_vol"), con));
+                instance.setNombre(rs.getInt("nombre"));
+                instance.setDate_reservation(rs.getTimestamp("date_reservation"));
             }
+        } catch (Exception e) {
+            throw e;
         } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
+
         }
 
         return instance;
     }
 
-    public static Reservation[] getAll() throws Exception {
-        Connection con = MyConnect.getConnection();
+    public static Reservation[] getAll(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         List<Reservation> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM reservation ORDER BY id ASC";
+            String query = "SELECT * FROM reservation order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
             while (rs.next()) {
                 Reservation item = new Reservation();
                 item.setId(rs.getInt("id"));
-                item.setIdUser(rs.getInt("id_user"));
-                item.setIdVol(rs.getInt("id_vol"));
-                item.setIdSiege(rs.getInt("id_siege"));
-                item.setPrixFinal(rs.getDouble("prix_final"));
-                item.setDateReservation(rs.getTimestamp("date_reservation"));
-
+                item.setUser(User.getById(rs.getInt("id_user"), con));
+                item.setVol(Vol.getById(rs.getInt("id_vol"), con));
+                item.setNombre(rs.getInt("nombre"));
+                item.setDate_reservation(rs.getTimestamp("date_reservation"));
                 items.add(item);
             }
+        } catch (Exception e) {
+            throw e;
         } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
         }
 
         return items.toArray(new Reservation[0]);
     }
 
-    public void update() throws Exception {
-        Connection con = MyConnect.getConnection();
+    public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
-
+        ResultSet rs = null;
         try {
-            String query = "UPDATE reservation SET id_user = ?, id_vol = ?, id_siege = ?, prix_final = ? WHERE id = ?";
+            String query = "INSERT INTO reservation (id_user, id_vol, nombre, date_reservation) VALUES (?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
-            st.setInt(1, this.idUser);
-            st.setInt(2, this.idVol);
-            st.setInt(3, this.idSiege);
-            st.setDouble(4, this.prixFinal);
-            st.setInt(5, this.id);
+            st.setInt(1, this.id_user);
+            st.setInt(2, this.id_vol);
+            st.setInt(3, this.nombre);
+            st.setTimestamp(4, this.date_reservation);
+            try {
+                rs = st.executeQuery();
+                if (rs.next()) {
+                    int generatedId = rs.getInt("id");
+                    this.setId(generatedId);
+                    con.commit();
+                    return generatedId;
+                } else {
+                    con.rollback();
+                    throw new Exception("Failed to retrieve generated ID");
+                }
+            } catch (Exception e) {
+                con.rollback();
+                throw new Exception("Failed to insert record", e);
+            }
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
+        }
+    }
 
+    public void update(Connection con) throws Exception {
+        PreparedStatement st = null;
+        try {
+            String query = "UPDATE reservation SET id_user = ?, id_vol = ?, nombre = ?, date_reservation = ? WHERE id = ?";
+            st = con.prepareStatement(query);
+            st.setInt(1, this.user.getId());
+            st.setInt(2, this.vol.getId());
+            st.setInt(3, this.nombre);
+            st.setTimestamp(4, this.date_reservation);
+            st.setInt(5, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();
             } catch (Exception e) {
                 con.rollback();
-                throw new Exception("Échec de la mise à jour de la réservation", e);
+                throw new Exception("Failed to update record", e);
             }
         } finally {
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+            if (st != null)
+                st.close();
         }
     }
 
     public static void deleteById(int id) throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
-
         try {
             String query = "DELETE FROM reservation WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
-
             try {
                 st.executeUpdate();
                 con.commit();
             } catch (Exception e) {
                 con.rollback();
-                throw new Exception("Échec de la suppression de la réservation", e);
+                throw new Exception("Failed to delete record", e);
             }
         } finally {
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+            if (st != null)
+                st.close();
+            if (con != null)
+                con.close();
         }
-    }
-
-    public static Reservation[] search(int idUser, int idVol, int idSiege, Double prixFinal, Timestamp dateReservation) throws Exception {
-        Connection con = null;
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        List<Reservation> items = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT * FROM reservation WHERE 1=1");
-
-        try {
-            // Construction de la requête avec les conditions dynamiques
-            if (idUser > 0) {
-                query.append(" AND id_user = ?");
-            }
-            if (idVol > 0) {
-                query.append(" AND id_vol = ?");
-            }
-            if (idSiege > 0) {
-                query.append(" AND id_siege = ?");
-            }
-            if (prixFinal != null) {
-                query.append(" AND prix_final = ?");
-            }
-            if (dateReservation != null) {
-                query.append(" AND date_reservation >= ?");
-            }
-
-            // Connexion à la base de données
-            con = MyConnect.getConnection();
-            st = con.prepareStatement(query.toString());
-
-            // Définition des paramètres dans la requête
-            int paramIndex = 1;
-            if (idUser > 0) {
-                st.setInt(paramIndex++, idUser);
-            }
-            if (idVol > 0) {
-                st.setInt(paramIndex++, idVol);
-            }
-            if (idSiege > 0) {
-                st.setInt(paramIndex++, idSiege);
-            }
-            if (prixFinal != null) {
-                st.setDouble(paramIndex++, prixFinal);
-            }
-            if (dateReservation != null) {
-                st.setTimestamp(paramIndex++, dateReservation);
-            }
-
-            // Exécution de la requête
-            rs = st.executeQuery();
-
-            // Traitement des résultats
-            while (rs.next()) {
-                Reservation item = new Reservation();
-                item.setId(rs.getInt("id"));
-                item.setIdUser(rs.getInt("id_user"));
-                item.setIdVol(rs.getInt("id_vol"));
-                item.setIdSiege(rs.getInt("id_siege"));
-                item.setPrixFinal(rs.getDouble("prix_final"));
-                item.setDateReservation(rs.getTimestamp("date_reservation"));
-
-                items.add(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("Erreur lors de la recherche des réservations : " + e.getMessage());
-        } finally {
-            // Fermeture des ressources
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
-        }
-
-        return items.toArray(new Reservation[0]);
     }
 }
+
+// Commun'IT app

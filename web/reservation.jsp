@@ -49,7 +49,7 @@
                     <div class="card-fluid">
                       <h5 class="card-title" >liste vol</h5>
                       <!-- Default Table -->
-                      <table class="table table-hover">
+                      <table class="table">
                         <thead>
                           <tr>
                             <th scope="col">#ref-vol</th>
@@ -66,19 +66,20 @@
                         <tbody>
                           <% for(int n=0;n< listVol.length;n++) {%>
                             <tr>
-                              <th scope="row"><a href="ResultService?idVol=<%=listVol[n].getId() %>"><%=listVol[n].getNumeroVol() %></a></th>
+                              <th scope="row"><a class="btn btn-primary" href="reserver?idVol=<%=listVol[n].getId() %>"><%=listVol[n].getNumero_vol() %></a></th>
                               <th scope="row"><%=listVol[n].getAvion().getModele() %></th>
-                              <td><%=listVol[n].getVilleDepart().getNom() %></td>
-                              <td><%=listVol[n].getVilleArrivee().getNom() %></td>
-                              <td><%=listVol[n].getDateDepart() %></td>
-                              <td><%=listVol[n].getDateArrivee() %></td>
-                              <td><%=listVol[n].getPrixEconomique() %></td>
-                              <td><%=listVol[n].getPrixBusiness() %></td>
-                              <td><%=listVol[n].getDateLimit() %></td>
+                              <td><%=listVol[n].getVille_depart().getNom() %></td>
+                              <td><%=listVol[n].getVille_arrivee().getNom() %></td>
+                              <td><%=listVol[n].getDate_depart() %></td>
+                              <td><%=listVol[n].getDate_arrivee() %></td>
+                              <td><%=listVol[n].getPrix_economique() %></td>
+                              <td><%=listVol[n].getPrix_business() %></td>
+                              <td><%=listVol[n].getDate_limite_reservation() %></td>
                             </tr>
                           <%}%>
                         </tbody>
                       </table>
+
                     </div><br><br>
                   </div>
                 </div>

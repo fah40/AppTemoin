@@ -2,11 +2,11 @@
 <%@page import="model.Vol"%>
 <%@page import="model.Avion"%>
 <%@page import="model.Ville"%>
+<%@page import="model.User"%>
 
 <%
-  Vol[] listVol=(Vol[]) request.getAttribute("listVol");
-  Avion[] listAvion=(Avion[]) request.getAttribute("listAvion");
-  Ville[] listVille=(Ville[]) request.getAttribute("listVille");
+  Vol myVol= (Vol)request.getAttribute("myVol");
+  int id_user= ((User)session.getAttribute("user")).getId();
 %>
     <section class="section dashboard">
       <div class="row">
@@ -20,70 +20,67 @@
 
               <div class="card">
                 <div class="card-body">
-                  <h2 class="card-title">Reservation </h2>
-                  <form class="row g-3" action="ResultService" method="get">
-                    <div class="col-md-2">
-                      <label for="inputState" class="form-label"></label>
-                    </div>
-                    <div class="col-md-2">
-                      <select id="inputState" class="form-select" name="vol.idAvion">
-                        <option selected>choisir...</option>
-                        <% for(int x=0;x< listAvion.length;x++) {%>
-                        <option value="<%=listAvion[x].getId()%>"><%=listAvion[x].getModele()%></option>
-                        <% } %>
-                      </select>
-                    </div><br>
-                    <div class="col-md-2">
-                      <select id="inputState" class="form-select" name="vol.idVilleArrivee">
-                        <option selected>destination ...</option>
-                        <% for(int c=0;c< listVille.length;c++) {%>
-                        <option value="<%=listVille[c].getId()%>"><%=listVille[c].getNom()%></option>
-                        <% } %>
-                      </select>
-                    </div><br>
-                    <div class="col-md-2">
-                      <label for="" class="form-label">date depart</label>
-                      <input type="datetime-local" class="form-control" id="" name="vol.dateDepart">
-                    </div>
-                    </div><br>
-                    <div class="col-md-2">
-                      <button type="submit" class="btn btn-warning form-control">show</button>
-                    </div>
-                  </form><br>
-                  <div class="card">
-                    <h5 class="card-title" >liste vol</h5>
-                    <!-- Default Table -->
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th scope="col">#ref-vol</th>
-                          <th scope="col">#ref-Avion</th>
-                          <th scope="col">Ville depart</th>
-                          <th scope="col">destination</th>
-                          <th scope="col">date depart</th>
-                          <th scope="col">date arrivee</th>
-                          <th scope="col">prix business</th>
-                          <th scope="col">prix economique</th>
-                          <th scope="col">date limite reservation</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <% for(int n=0;n< listVol.length;n++) {%>
+                  <!-- Default Table -->
+                  <h5 class="card-title" >vol</h5>
+                      <!-- Default Table -->
+                      <table class="table">
+                        <thead>
                           <tr>
-                            <th scope="row"><a href="ResultService?idBlockProd=<%=listVol[n].getId() %>"><%=listVol[n].getNumeroVol() %></a></th>
-                            <th scope="row"><%=listVol[n].getAvion().getModele() %></th>
-                            <td><%=listVol[n].getVilleDepart().getNom() %></td>
-                            <td><%=listVol[n].getVilleArrivee().getNom() %></td>
-                            <td><%=listVol[n].getDateDepart() %></td>
-                            <td><%=listVol[n].getDateArrivee() %></td>
-                            <td><%=listVol[n].getPrixEconomique() %></td>
-                            <td><%=listVol[n].getPrixBusiness() %></td>
-                            <td><%=listVol[n].getDateLimit() %></td>
+                            <th scope="col">#ref-vol</th>
+                            <th scope="col">#ref-Avion</th>
+                            <th scope="col">Ville depart</th>
+                            <th scope="col">destination</th>
+                            <th scope="col">date depart</th>
+                            <th scope="col">date arrivee</th>
+                            <th scope="col">prix business</th>
+                            <th scope="col">prix economique</th>
+                            <th scope="col">date limite reservation</th>
                           </tr>
-                        <%}%>
-                      </tbody>
-                    </table>
-                  </div><br><br>
+                        </thead>
+                        <tbody>
+                            <tr>
+                              <th scope="row"><%=myVol.getNumero_vol() %></th>
+                              <th scope="row"><%=myVol.getAvion().getModele() %></th>
+                              <td><%=myVol.getVille_depart().getNom() %></td>
+                              <td><%=myVol.getVille_arrivee().getNom() %></td>
+                              <td><%=myVol.getDate_depart() %></td>
+                              <td><%=myVol.getDate_arrivee() %></td>
+                              <td><%=myVol.getPrix_economique() %></td>
+                              <td><%=myVol.getPrix_business() %></td>
+                              <td><%=myVol.getDate_limite_reservation() %></td>
+                            </tr>
+                        </tbody>
+                      </table>
+
+                  <!-- End Default Table Example -->
+                <h3 class="alert alert-warning">Reserver</h3>
+
+                  <!-- Multi Columns Form -->
+                  <form class="row g-3" action="saveReservation" method="post">
+
+                      <input type="hidden" name="id_vol_curr" value="<%= myVol.getId() %>">
+                      <input type="hidden" name="reservation.id_vol" value="<%= myVol.getId() %>">
+                      <!-- Champ caché pour l'utilisateur -->
+                      <input type="hidden" name="reservation.id_user" value="<%= id_user %>">
+
+                      <!-- Nombre de places réservées -->
+                      <div class="col-md-3">
+                          <label for="inputNombre" class="form-label">Nombre de places</label>
+                          <input type="number" class="form-control" id="inputNombre" name="reservation.nombre" min="1">
+                      </div>
+
+                      <!-- Date de réservation -->
+                      <div class="col-md-3">
+                          <label for="inputDateReservation" class="form-label">Date de reservation</label>
+                          <input type="datetime-local" class="form-control" id="inputDateReservation" name="reservation.date_reservation">
+                      </div>
+
+                      <!-- Boutons d'action -->
+                      <div class="text-center">
+                          <button type="submit" class="btn btn-success">Reserver</button>
+                          <button type="reset" class="btn btn-secondary">Reset</button>
+                      </div>
+                  </form>
 
                 </div>
               </div>

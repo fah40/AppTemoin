@@ -38,15 +38,15 @@
                     <tbody>
                       <% for(int n=0;n< listVol.length;n++) {%>
                         <tr>
-                          <th scope="row"><%=listVol[n].getNumeroVol() %></th>
+                          <th scope="row"><%=listVol[n].getNumero_vol() %></th>
                           <th scope="row"><%=listVol[n].getAvion().getModele() %></th>
-                          <td><%=listVol[n].getVilleDepart().getNom() %></td>
-                          <td><%=listVol[n].getVilleArrivee().getNom() %></td>
-                          <td><%=listVol[n].getDateDepart() %></td>
-                          <td><%=listVol[n].getDateArrivee() %></td>
-                          <td><%=listVol[n].getPrixEconomique() %></td>
-                          <td><%=listVol[n].getPrixBusiness() %></td>
-                          <td><%=listVol[n].getDateLimit() %></td>
+                          <td><%=listVol[n].getVille_depart().getNom() %></td>
+                          <td><%=listVol[n].getVille_arrivee().getNom() %></td>
+                          <td><%=listVol[n].getDate_depart() %></td>
+                          <td><%=listVol[n].getDate_arrivee() %></td>
+                          <td><%=listVol[n].getPrix_economique() %></td>
+                          <td><%=listVol[n].getPrix_business() %></td>
+                          <td><%=listVol[n].getDate_limite_reservation() %></td>
                         </tr>
                       <%}%>
                     </tbody>
@@ -65,68 +65,70 @@
                 <div class="card-body">
                   <!-- Multi Columns Form -->
                   <form class="row g-3" action="insertVol" method="post">
-                  
-                  <h5 class="card-title">Insertion vol</h5>
+                    <h5 class="card-title">Insertion vol</h5>
+
                     <div class="col-md-12">
                       <label for="" class="form-label">Avion</label>
                       <select id="inputState" class="form-select" name="vol.idAvion">
                         <option selected>choisir...</option>
-                        <% for(int x=0;x< listAvion.length;x++) {%>
-                        <option value="<%=listAvion[x].getId()%>"><%=listAvion[x].getModele()%></option>
+                        <% for(int x=0; x < listAvion.length; x++) { %>
+                          <option value="<%=listAvion[x].getId()%>"><%=listAvion[x].getModele()%></option>
                         <% } %>
                       </select>
                     </div>
 
                     <div class="col-md-12">
-                      <label for="" class="form-label">Ville depart</label>
-                      <select id="inputState" class="form-select" name="vol.idVilleDepart">
+                      <label for="" class="form-label">Ville départ</label>
+                      <select id="inputState" class="form-select" name="vol.id_ville_depart">
                         <option selected>choisir...</option>
-                        <% for(int c=0;c< listVille.length;c++) {%>
-                        <option value="<%=listVille[c].getId()%>"><%=listVille[c].getNom()%></option>
+                        <% for(int c=0; c < listVille.length; c++) { %>
+                          <option value="<%=listVille[c].getId()%>"><%=listVille[c].getNom()%></option>
                         <% } %>
                       </select>
                     </div>
 
                     <div class="col-md-12">
                       <label for="" class="form-label">Ville destination</label>
-                      <select id="inputState" class="form-select" name="vol.idVilleArrivee">
+                      <select id="inputState" class="form-select" name="vol.id_ville_arrivee">
                         <option selected>choisir...</option>
-                        <% for(int c=0;c< listVille.length;c++) {%>
-                        <option value="<%=listVille[c].getId()%>"><%=listVille[c].getNom()%></option>
+                        <% for(int c=0; c < listVille.length; c++) { %>
+                          <option value="<%=listVille[c].getId()%>"><%=listVille[c].getNom()%></option>
                         <% } %>
                       </select>
                     </div>
 
                     <div class="col-md-12">
-                      <label for="" class="form-label">date depart</label>
-                      <input type="datetime-local" class="form-control" id="" name="vol.dateDepart">
+                      <label for="" class="form-label">Date départ</label>
+                      <input type="datetime-local" class="form-control" id="" name="vol.date_depart">
                     </div>
 
                     <div class="col-md-12">
-                      <label for="" class="form-label">date arrive</label>
-                      <input type="datetime-local" class="form-control" id="" name="vol.dateArrivee">
+                      <label for="" class="form-label">Date arrivée</label>
+                      <input type="datetime-local" class="form-control" id="" name="vol.date_arrivee">
                     </div>
 
                     <div class="col-md-8">
-                      <label for="" class="form-label">prix business</label>
-                      <input type="number" class="form-control" id="" name="vol.prixEconomique">
+                      <label for="" class="form-label">Prix économique</label>
+                      <input type="number" class="form-control" id="" name="vol.prix_economique">
                     </div>
 
                     <div class="col-md-8">
-                      <label for="" class="form-label">prix economique</label>
-                      <input type="number" class="form-control" id="" name="vol.prixBusiness">
+                      <label for="" class="form-label">Prix business</label>
+                      <input type="number" class="form-control" id="" name="vol.prix_business">
                     </div>
 
                     <div class="col-md-12">
-                      <label for="" class="form-label">date Limite reservation</label>
-                      <input type="datetime-local" class="form-control" id="" name="vol.dateLimit">
+                      <label for="" class="form-label">Date limite réservation</label>
+                      <input type="datetime-local" class="form-control" id="" name="vol.date_limite_reservation">
                     </div>
 
                     <div class="text-center">
-                      <button type="submit" class="btn btn-warning">save</button>
+                      <button type="submit" class="btn btn-warning">Save</button>
                       <button type="reset" class="btn btn-secondary">Reset</button>
                     </div>
-                  </form><!-- End Multi Columns Form -->
+
+                  </form>
+
 
                 </div>
               </div>

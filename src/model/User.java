@@ -1,34 +1,42 @@
 package model;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-
-import bd.MyConnect;
-
+import java.sql.*;
+import java.util.*;
+import db.MyConnect;
+import use.*;
 public class User {
     private int id;
     private String nom;
     private String email;
     private String password;
     private String role;
-
-    // Getters et Setters
+    public User(){}
+    public User(String nom,String email,String password,String role,Connection con) throws Exception{
+        setNom(nom); 
+        setEmail(email); 
+        setPassword(password); 
+        setRole(role); 
+    }
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id) throws Exception {
+        MyUtil.verifyNumericPostive(id, "id");
         this.id = id;
+    }
+
+    public void setId(String id) throws Exception {
+        int toSet =  MyUtil.convertIntFromHtmlInput(id);
+
+        setId(toSet) ;
     }
 
     public String getNom() {
         return nom;
     }
 
-    public void setNom(String nom) {
+    public void setNom(String nom) throws Exception {
+        MyUtil.verifyStringNotNullOrEmpty(nom, "nom");
         this.nom = nom;
     }
 
@@ -36,7 +44,8 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(String email) throws Exception {
+        MyUtil.verifyStringNotNullOrEmpty(email, "email");
         this.email = email;
     }
 
@@ -44,7 +53,8 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws Exception {
+        MyUtil.verifyStringNotNullOrEmpty(password, "password");
         this.password = password;
     }
 
@@ -52,61 +62,12 @@ public class User {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(String role) throws Exception {
+        MyUtil.verifyStringNotNullOrEmpty(role, "role");
         this.role = role;
     }
 
-    public void insert(Connection con) throws Exception {
-        PreparedStatement st = null;
-
-        try {
-            String query = "INSERT INTO users (nom, email, password, role) VALUES (?, ?, crypt('?', gen_salt('bf', 8)), ?)";
-            st = con.prepareStatement(query);
-            st.setString(1, this.nom);
-            st.setString(2, this.email);
-            st.setString(3, this.password);
-            st.setString(4, this.role.toString());
-
-            try {
-                st.executeUpdate();
-                con.commit();
-            } catch (Exception e) {
-                con.rollback();
-                throw new Exception("Échec de l'insertion de l'utilisateur", e);
-            }
-        } finally {
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
-        }
-    }
-
-    // Méthodes pour les opérations CRUD
-    public void insert() throws Exception {
-        Connection con = MyConnect.getConnection();
-        PreparedStatement st = null;
-
-        try {
-            String query = "INSERT INTO users (nom, email, password, role) VALUES (?, ?, crypt('?', gen_salt('bf', 8)), ?)";
-            st = con.prepareStatement(query);
-            st.setString(1, this.nom);
-            st.setString(2, this.email);
-            st.setString(3, this.password);
-            st.setString(4, this.role.toString());
-
-            try {
-                st.executeUpdate();
-                con.commit();
-            } catch (Exception e) {
-                con.rollback();
-                throw new Exception("Échec de l'insertion de l'utilisateur", e);
-            }
-        } finally {
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
-        }
-    }
-
-    public static User getById(int id,Connection con) throws Exception {
+    public static User getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         User instance = null;
@@ -125,43 +86,46 @@ public class User {
                 instance.setPassword(rs.getString("password"));
                 instance.setRole(rs.getString("role"));
             }
+        } catch (Exception e) {
+            throw e ;
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
         }
 
         return instance;
     }
 
-    public static User getById(int id) throws Exception {
-        Connection con = MyConnect.getConnection();
+    public static User checkLogin(String email, String pass, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         User instance = null;
-
+    
         try {
-            String query = "SELECT * FROM users WHERE id = ?";
+            String query = "SELECT * FROM users WHERE email = ? AND password = crypt(?, password)";
             st = con.prepareStatement(query);
-            st.setInt(1, id);
+            st.setString(1, email);
+            st.setString(2, pass);
             rs = st.executeQuery();
-
+    
             if (rs.next()) {
                 instance = new User();
                 instance.setId(rs.getInt("id"));
                 instance.setNom(rs.getString("nom"));
                 instance.setEmail(rs.getString("email"));
-                instance.setPassword(rs.getString("password"));
+                instance.setPassword(rs.getString("password")); // En général, on ne stocke pas le password récupéré
                 instance.setRole(rs.getString("role"));
             }
+        } catch (Exception e) {
+            throw e;
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
         }
-
+    
         return instance;
     }
+    
 
     public static User[] getAll() throws Exception {
         Connection con = MyConnect.getConnection();
@@ -170,7 +134,7 @@ public class User {
         List<User> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM users ORDER BY id ASC";
+            String query = "SELECT * FROM users order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -181,183 +145,88 @@ public class User {
                 item.setEmail(rs.getString("email"));
                 item.setPassword(rs.getString("password"));
                 item.setRole(rs.getString("role"));
-
                 items.add(item);
             }
+        } catch (Exception e) {
+            throw e ;
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+            if (con != null && !false) con.close();
         }
 
         return items.toArray(new User[0]);
     }
-
-    public static User[] getAll(Connection con) throws Exception {
+    public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
-        List<User> items = new ArrayList<>();
-
         try {
-            String query = "SELECT * FROM users ORDER BY id ASC";
+            String query = "INSERT INTO users (nom, email, password, role) VALUES (?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
-            rs = st.executeQuery();
-
-            while (rs.next()) {
-                User item = new User();
-                item.setId(rs.getInt("id"));
-                item.setNom(rs.getString("nom"));
-                item.setEmail(rs.getString("email"));
-                item.setPassword(rs.getString("password"));
-                item.setRole(rs.getString("role"));
-
-                items.add(item);
-            }
-        } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
-        }
-
-        return items.toArray(new User[0]);
-    }
-
-    public static User checkLoging(String email, String mdp, Connection con) throws Exception {
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        User item = null;
-    
-        try {
-            String query = "SELECT * FROM users WHERE email=? AND password = crypt(?, password);";
-            st = con.prepareStatement(query);
-            st.setString(1, email);
-            st.setString(2, mdp);
-            rs = st.executeQuery();
-    
-            if (rs.next()) {
-                item = new User();
-                item.setId(rs.getInt("id"));
-                item.setNom(rs.getString("nom"));
-                item.setEmail(rs.getString("email"));
-                item.setPassword(rs.getString("password"));
-                item.setRole(rs.getString("role"));
+            st.setString(1, this.nom);
+            st.setString(2, this.email);
+            st.setString(3, this.password);
+            st.setString(4, this.role);
+            try {
+                rs = st.executeQuery();
+                if (rs.next()) {
+                    int generatedId = rs.getInt("id");
+                    this.setId(generatedId); 
+                    con.commit();
+                    return generatedId;
+                } else {
+                    con.rollback();
+                    throw new Exception("Failed to retrieve generated ID");
+                }
+            } catch (Exception e) {
+                con.rollback();
+                throw new Exception("Failed to insert record", e);
             }
         } finally {
             if (rs != null) rs.close();
             if (st != null) st.close();
         }
-    
-        return item;
     }
-    
-
-    public void update() throws Exception {
-        Connection con = MyConnect.getConnection();
+    public void update(Connection con) throws Exception {
         PreparedStatement st = null;
-
         try {
             String query = "UPDATE users SET nom = ?, email = ?, password = ?, role = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setString(2, this.email);
             st.setString(3, this.password);
-            st.setString(4, this.role.toString());
-            st.setInt(5, this.id);
-
+            st.setString(4, this.role);
+            st.setInt(5, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();
             } catch (Exception e) {
                 con.rollback();
-                throw new Exception("Échec de la mise à jour de l'utilisateur", e);
+                throw new Exception("Failed to update record", e);
             }
         } finally {
             if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
         }
     }
-
     public static void deleteById(int id) throws Exception {
-        Connection con = MyConnect.getConnection();
+            Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
-
         try {
             String query = "DELETE FROM users WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
-
             try {
                 st.executeUpdate();
                 con.commit();
             } catch (Exception e) {
                 con.rollback();
-                throw new Exception("Échec de la suppression de l'utilisateur", e);
+                throw new Exception("Failed to delete record", e);
             }
         } finally {
             if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
+           if (con != null) con.close(); 
         }
-    }
-
-    public static User[] search(String nom, String email, String role) throws Exception {
-        Connection con = null;
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        List<User> items = new ArrayList<>();
-        StringBuilder query = new StringBuilder("SELECT * FROM users WHERE 1=1");
-
-        try {
-            // Construction de la requête avec les conditions dynamiques
-            if (nom != null && !nom.isEmpty()) {
-                query.append(" AND nom LIKE ?");
-            }
-            if (email != null && !email.isEmpty()) {
-                query.append(" AND email LIKE ?");
-            }
-            if (role != null) {
-                query.append(" AND role = ?");
-            }
-
-            // Connexion à la base de données
-            con = MyConnect.getConnection();
-            st = con.prepareStatement(query.toString());
-
-            // Définition des paramètres dans la requête
-            int paramIndex = 1;
-            if (nom != null && !nom.isEmpty()) {
-                st.setString(paramIndex++, "%" + nom + "%");
-            }
-            if (email != null && !email.isEmpty()) {
-                st.setString(paramIndex++, "%" + email + "%");
-            }
-            if (role != null) {
-                st.setString(paramIndex++, role.toString());
-            }
-
-            // Exécution de la requête
-            rs = st.executeQuery();
-
-            // Traitement des résultats
-            while (rs.next()) {
-                User item = new User();
-                item.setId(rs.getInt("id"));
-                item.setNom(rs.getString("nom"));
-                item.setEmail(rs.getString("email"));
-                item.setPassword(rs.getString("password"));
-                item.setRole(rs.getString("role"));
-
-                items.add(item);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("Erreur lors de la recherche des utilisateurs : " + e.getMessage());
-        } finally {
-            // Fermeture des ressources
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !con.isClosed()) con.close();
-        }
-
-        return items.toArray(new User[0]);
     }
 }
+
+// Commun'IT app

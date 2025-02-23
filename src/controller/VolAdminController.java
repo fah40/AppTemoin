@@ -3,7 +3,7 @@ package controller;
 import java.sql.Connection;
 
 import annotation.*;
-import bd.MyConnect;
+import db.MyConnect;
 import models.*;
 import util.MySession;
 import model.*;
@@ -43,6 +43,7 @@ public class VolAdminController {
     public ModelView creatVol(@ObjParam(value = "vol") Vol vol) throws Exception {
         Connection con= null;
         ModelView model= new ModelView();
+        model.setUrl("vol.jsp");
         try {
             con= MyConnect.getConnection();
             

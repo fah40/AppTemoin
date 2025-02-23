@@ -1,11 +1,9 @@
 CREATE DATABASE gestion_vol;
 \c gestion_vol;
 
-CREATE TYPE role_type AS ENUM ('admin', 'client', 'user');
-CREATE TYPE siege_type AS ENUM ('economique', 'business');
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
--- Création des tables
 
+-- Création des tables
 
 -- Table des utilisateurs (Clients et Administrateurs)
 CREATE TABLE users (
@@ -13,7 +11,7 @@ CREATE TABLE users (
     nom VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role role_type NOT NULL -- Utilisation du type ENUM défini
+    role VARCHAR(30) NOT NULL -- Utilisation du type ENUM défini
 );
 
 -- Table des villes desservies
@@ -54,7 +52,7 @@ CREATE TABLE siege (
     id serial PRIMARY KEY,
     id_vol INT NOT NULL,
     numero_siege VARCHAR(10) NOT NULL,
-    type siege_type NOT NULL, -- Utilisation du type ENUM défini
+    type VARCHAR(10) NOT NULL, -- Utilisation du type ENUM défini
     est_reserve BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (id_vol) REFERENCES vol(id)
 );
@@ -64,11 +62,21 @@ CREATE TABLE reservation (
     id serial PRIMARY KEY,
     id_user INT NOT NULL,
     id_vol INT NOT NULL,
-    id_siege INT NOT NULL UNIQUE,
-    prix_final DECIMAL(12,2) NOT NULL,
+    nombre INT NOT NULL,
     date_reservation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Utilisation de TIMESTAMP au lieu de DATETIME
     FOREIGN KEY (id_user) REFERENCES users(id),
-    FOREIGN KEY (id_vol) REFERENCES vol(id),
+    FOREIGN KEY (id_vol) REFERENCES vol(id)
+);
+
+CREATE TABLE billet (
+    id serial PRIMARY KEY,
+    id_user INT NOT NULL,
+    id_vol INT NOT NULL,
+    id_reservation INT NOT NULL,
+    id_siege INT NOT NULL,
+    prix_final DECIMAL(12,2) NOT NULL,
+    FOREIGN KEY (id_user) REFERENCES users(id),
+    FOREIGN KEY (id_reservation) REFERENCES reservation(id),
     FOREIGN KEY (id_siege) REFERENCES siege(id)
 );
 
@@ -78,14 +86,5 @@ CREATE TABLE promotion (
     id_vol INT NOT NULL,
     reduction DECIMAL(12,2) NOT NULL,
     nombre_max_reservations INT NOT NULL DEFAULT 3,
-    FOREIGN KEY (id_vol) REFERENCES vol(id)
-);
-
--- Table des paramètres de réservation
-CREATE TABLE param_vol (
-    id serial PRIMARY KEY,
-    id_vol INT NOT NULL,
-    date_limite_reservation TIMESTAMP NOT NULL, -- Utilisation de TIMESTAMP au lieu de DATETIME
-    annulation_possible BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_vol) REFERENCES vol(id)
 );

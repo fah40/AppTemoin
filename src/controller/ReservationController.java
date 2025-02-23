@@ -3,7 +3,7 @@ package controller;
 import java.sql.Connection;
 
 import annotation.*;
-import bd.MyConnect;
+import db.MyConnect;
 import models.*;
 import util.MySession;
 import model.*;
@@ -38,16 +38,15 @@ public class ReservationController {
 
     @Get
     @Url(url = "AppTemoin/reserver")
-    @RootPage(path = "reservation.jsp")
+    @RootPage(path = "reserver.jsp")
     public ModelView getChoosedVol(@RequestParam(value = "idVol") int idVol) throws Exception {
         Connection con= null;
         ModelView model= new ModelView();
         try {
             con= MyConnect.getConnection();
-            model.addObject("listAvion", Avion.getAll(con));
-            model.addObject("listVille", Ville.getAll(con));
-            model.addObject("listVol", Vol.getAll(con));
-            model.setUrl("reservation.jsp");
+            model.addObject("myVol", Vol.getById(idVol,con));
+            
+            model.setUrl("reserver.jsp");
         } catch (Exception e) {
             e.printStackTrace();
         }finally{
@@ -55,26 +54,26 @@ public class ReservationController {
                 con.close();
             }
         }
-
         return model;
     }
 
     @Post
-    @Url(url = "AppTemoin/save")
-    @RootPage(path = "vol.jsp")
-    @AuthMethode(role = {"admin"})
-    public ModelView creatVol(@ObjParam(value = "vol") Vol vol) throws Exception {
+    @Url(url = "AppTemoin/saveReservation")
+    @RootPage(path = "reserver.jsp")
+    @AuthMethode(role = {"client"})
+    public ModelView creatReservation(@ObjParam(value = "reservation") Reservation reservation,@RequestParam(value = "id_vol_curr") int id_vol_curr) throws Exception {
         Connection con= null;
         ModelView model= new ModelView();
         try {
             con= MyConnect.getConnection();
             
-            vol.insert(con);
+            reservation.insert(con);
             
-            model.addObject("listAvion", Avion.getAll(con));
-            model.addObject("listVille", Ville.getAll(con));
-            model.addObject("listVol", Vol.getAll(con));
-            model.setUrl("vol.jsp");
+            model.addObject("myVol", Vol.getById(id_vol_curr,con));
+            
+            model.addObject("listReservation", Reservation.getAll(con));
+
+            model.setUrl("reserver.jsp");
         } catch (Exception e) {
             e.printStackTrace();
         }finally{

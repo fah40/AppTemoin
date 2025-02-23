@@ -3,18 +3,16 @@ import java.sql.*;
 import java.util.*;
 import db.MyConnect;
 import use.*;
-public class Siege {
+public class Promotion {
     private int id;
     private Vol vol;
-    private String numero_siege;
-    private String type;
-    private boolean est_reserve;
-    public Siege(){}
-    public Siege(String vol,String numero_siege,String type,String est_reserve,Connection con) throws Exception{
+    private double reduction;
+    private int nombre_max_reservations;
+    public Promotion(){}
+    public Promotion(String vol,String reduction,String nombre_max_reservations,Connection con) throws Exception{
         setVol(vol,con); 
-        setNumero_siege(numero_siege); 
-        setType(type); 
-        setEst_reserve(est_reserve); 
+        setReduction(reduction); 
+        setNombre_max_reservations(nombre_max_reservations); 
     }
     public int getId() {
         return id;
@@ -46,56 +44,53 @@ public class Siege {
         setVol(toSet) ;
     }
 
-    public String getNumero_siege() {
-        return numero_siege;
+    public double getReduction() {
+        return reduction;
     }
 
-    public void setNumero_siege(String numero_siege) throws Exception {
-        MyUtil.verifyStringNotNullOrEmpty(numero_siege, "numero_siege");
-        this.numero_siege = numero_siege;
+    public void setReduction(double reduction) throws Exception {
+        MyUtil.verifyNumericPostive(reduction, "reduction");
+        this.reduction = reduction;
     }
 
-    public String getType() {
-        return type;
+    public void setReduction(String reduction) throws Exception {
+        double toSet =  MyUtil.convertDoubleFromHtmlInput(reduction);
+
+        setReduction(toSet) ;
     }
 
-    public void setType(String type) throws Exception {
-        MyUtil.verifyStringNotNullOrEmpty(type, "type");
-        this.type = type;
+    public int getNombre_max_reservations() {
+        return nombre_max_reservations;
     }
 
-    public boolean getEst_reserve() {
-        return est_reserve;
+    public void setNombre_max_reservations(int nombre_max_reservations) throws Exception {
+        MyUtil.verifyNumericPostive(nombre_max_reservations, "nombre_max_reservations");
+        this.nombre_max_reservations = nombre_max_reservations;
     }
 
-    public void setEst_reserve(boolean est_reserve) throws Exception {
-        this.est_reserve = est_reserve;
+    public void setNombre_max_reservations(String nombre_max_reservations) throws Exception {
+        int toSet =  MyUtil.convertIntFromHtmlInput(nombre_max_reservations);
+
+        setNombre_max_reservations(toSet) ;
     }
 
-    public void setEst_reserve(String est_reserve) throws Exception {
-        boolean toSet =  MyUtil.convertBooleanFromCheckBox(est_reserve);
-
-        setEst_reserve(toSet) ;
-    }
-
-    public static Siege getById(int id, Connection con) throws Exception {
+    public static Promotion getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
-        Siege instance = null;
+        Promotion instance = null;
 
         try {
-            String query = "SELECT * FROM siege WHERE id = ?";
+            String query = "SELECT * FROM promotion WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
 
             if (rs.next()) {
-                instance = new Siege();
+                instance = new Promotion();
                 instance.setId(rs.getInt("id"));
                 instance.setVol(Vol.getById(rs.getInt("id_vol") ,con ));
-                instance.setNumero_siege(rs.getString("numero_siege"));
-                instance.setType(rs.getString("type"));
-                instance.setEst_reserve(rs.getBoolean("est_reserve"));
+                instance.setReduction(rs.getDouble("reduction"));
+                instance.setNombre_max_reservations(rs.getInt("nombre_max_reservations"));
             }
         } catch (Exception e) {
             throw e ;
@@ -107,54 +102,23 @@ public class Siege {
 
         return instance;
     }
-
-    public static Siege getAllById(int id, Connection con) throws Exception {
-        PreparedStatement st = null;
-        ResultSet rs = null;
-        Siege instance = null;
-
-        try {
-            String query = "SELECT * FROM siege WHERE id_vol = ?";
-            st = con.prepareStatement(query);
-            st.setInt(1, id);
-            rs = st.executeQuery();
-
-            if (rs.next()) {
-                instance = new Siege();
-                instance.setId(rs.getInt("id"));
-                instance.setVol(Vol.getById(rs.getInt("id_vol") ,con ));
-                instance.setNumero_siege(rs.getString("numero_siege"));
-                instance.setType(rs.getString("type"));
-                instance.setEst_reserve(rs.getBoolean("est_reserve"));
-            }
-        } catch (Exception e) {
-            throw e ;
-        } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-        }
-
-        return instance;
-    }
-
-    public static Siege[] getAll() throws Exception {
+    public static Promotion[] getAll() throws Exception {
         Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
         ResultSet rs = null;
-        List<Siege> items = new ArrayList<>();
+        List<Promotion> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM siege order by id asc ";
+            String query = "SELECT * FROM promotion order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
             while (rs.next()) {
-                Siege item = new Siege();
+                Promotion item = new Promotion();
                 item.setId(rs.getInt("id"));
                 item.setVol(Vol.getById(rs.getInt("id_vol")  ,con ));
-                item.setNumero_siege(rs.getString("numero_siege"));
-                item.setType(rs.getString("type"));
-                item.setEst_reserve(rs.getBoolean("est_reserve"));
+                item.setReduction(rs.getDouble("reduction"));
+                item.setNombre_max_reservations(rs.getInt("nombre_max_reservations"));
                 items.add(item);
             }
         } catch (Exception e) {
@@ -165,18 +129,17 @@ public class Siege {
             if (con != null && !false) con.close();
         }
 
-        return items.toArray(new Siege[0]);
+        return items.toArray(new Promotion[0]);
     }
     public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO siege (id_vol, numero_siege, type, est_reserve) VALUES (?, ?, ?, ?) RETURNING id";
+            String query = "INSERT INTO promotion (id_vol, reduction, nombre_max_reservations) VALUES (?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setInt(1, this.vol.getId());
-            st.setString(2, this.numero_siege);
-            st.setString(3, this.type);
-            st.setBoolean(4, this.est_reserve);
+            st.setDouble(2, this.reduction);
+            st.setInt(3, this.nombre_max_reservations);
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
@@ -200,13 +163,12 @@ public class Siege {
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE siege SET id_vol = ?, numero_siege = ?, type = ?, est_reserve = ? WHERE id = ?";
+            String query = "UPDATE promotion SET id_vol = ?, reduction = ?, nombre_max_reservations = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt (1, this.vol.getId());
-            st.setString(2, this.numero_siege);
-            st.setString(3, this.type);
-            st.setBoolean(4, this.est_reserve);
-            st.setInt(5, this.getId());
+            st.setDouble(2, this.reduction);
+            st.setInt(3, this.nombre_max_reservations);
+            st.setInt(4, this.getId());
             try {
                 st.executeUpdate();
                 con.commit();
@@ -222,7 +184,7 @@ public class Siege {
             Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
         try {
-            String query = "DELETE FROM siege WHERE id = ?";
+            String query = "DELETE FROM promotion WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             try {
