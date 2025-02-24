@@ -45,6 +45,7 @@ public class ReservationController {
         try {
             con= MyConnect.getConnection();
             model.addObject("myVol", Vol.getById(idVol,con));
+            model.addObject("typeSiege", Siege_type.getAll(con));
             
             model.setUrl("reserver.jsp");
         } catch (Exception e) {
@@ -70,7 +71,7 @@ public class ReservationController {
             reservation.insert(con);
             
             model.addObject("myVol", Vol.getById(id_vol_curr,con));
-            
+            model.addObject("typeSiege", Siege_type.getAll(con));
             model.addObject("listReservation", Reservation.getAll(con));
 
             model.setUrl("reserver.jsp");

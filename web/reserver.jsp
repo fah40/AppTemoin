@@ -3,10 +3,12 @@
 <%@page import="model.Avion"%>
 <%@page import="model.Ville"%>
 <%@page import="model.User"%>
+<%@page import="model.Siege_type"%>
 
 <%
   Vol myVol= (Vol)request.getAttribute("myVol");
-  int id_user= ((User)session.getAttribute("user")).getId();
+  User user= ((User)session.getAttribute("user"));
+  Siege_type[] typeSiege= ((Siege_type[])request.getAttribute("typeSiege"));
 %>
     <section class="section dashboard">
       <div class="row">
@@ -54,20 +56,36 @@
 
                   <!-- End Default Table Example -->
                 <h3 class="alert alert-warning">Reserver</h3>
+                <h3>Nom : <b><%= user.getNom() %></b></h3>
 
                   <!-- Multi Columns Form -->
                   <form class="row g-3" action="saveReservation" method="post">
 
                       <input type="hidden" name="id_vol_curr" value="<%= myVol.getId() %>">
+                      <input type="hidden" name="reservation.id_user" value="<%= user.getId() %>">
                       <input type="hidden" name="reservation.id_vol" value="<%= myVol.getId() %>">
                       <!-- Champ caché pour l'utilisateur -->
-                      <input type="hidden" name="reservation.id_user" value="<%= id_user %>">
 
                       <!-- Nombre de places réservées -->
                       <div class="col-md-3">
                           <label for="inputNombre" class="form-label">Nombre de places</label>
                           <input type="number" class="form-control" id="inputNombre" name="reservation.nombre" min="1">
                       </div>
+                      <div class="col-md-9"></div>
+                      
+
+                      <!-- type siege -->
+                      <div class="col-md-3">
+                        <label for="inputState" class="form-label">type siege</label>
+                        <select id="inputState" class="form-select" name="reservation.id_type">
+                          <option selected>type...</option>
+                          <% for(int x=0;x< typeSiege.length;x++) {%>
+                            <option value="<%=typeSiege[x].getId()%>"><%=typeSiege[x].getNom()%></option>
+                          <% } %>
+                        </select>
+                      </div>
+
+                      <div class="col-md-6"></div>
 
                       <!-- Date de réservation -->
                       <div class="col-md-3">

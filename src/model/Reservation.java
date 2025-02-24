@@ -8,12 +8,30 @@ import use.*;
 public class Reservation {
     private int id;
     private int id_user;
+    private int id_type;
     private int id_vol;
     private int nombre;
     private java.sql.Timestamp date_reservation;
 
+    private Siege_type type;
     private User user;
     private Vol vol;
+
+    public Siege_type getType() {
+        return type;
+    }
+
+    public void setType(Siege_type type) {
+        this.type = type;
+    }
+
+    public int getId_type() {
+        return id_type;
+    }
+
+    public void setId_type(int id_type) {
+        this.id_type = id_type;
+    }
 
     public Reservation() {
     }
@@ -133,6 +151,7 @@ public class Reservation {
                 instance.setId(rs.getInt("id"));
                 instance.setUser(User.getById(rs.getInt("id_user"), con));
                 instance.setVol(Vol.getById(rs.getInt("id_vol"), con));
+                instance.setType(Siege_type.getById(rs.getInt("id_type"), con));
                 instance.setNombre(rs.getInt("nombre"));
                 instance.setDate_reservation(rs.getTimestamp("date_reservation"));
             }
@@ -164,6 +183,7 @@ public class Reservation {
                 item.setId(rs.getInt("id"));
                 item.setUser(User.getById(rs.getInt("id_user"), con));
                 item.setVol(Vol.getById(rs.getInt("id_vol"), con));
+                item.setType(Siege_type.getById(rs.getInt("id_type"), con));
                 item.setNombre(rs.getInt("nombre"));
                 item.setDate_reservation(rs.getTimestamp("date_reservation"));
                 items.add(item);
@@ -184,12 +204,13 @@ public class Reservation {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO reservation (id_user, id_vol, nombre, date_reservation) VALUES (?, ?, ?, ?) RETURNING id";
+            String query = "INSERT INTO reservation (id_user, id_vol, id_type, nombre, date_reservation) VALUES (?, ?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setInt(1, this.id_user);
             st.setInt(2, this.id_vol);
-            st.setInt(3, this.nombre);
-            st.setTimestamp(4, this.date_reservation);
+            st.setInt(3, this.id_type);
+            st.setInt(4, this.nombre);
+            st.setTimestamp(5, this.date_reservation);
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {

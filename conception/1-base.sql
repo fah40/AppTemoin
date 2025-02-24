@@ -47,13 +47,18 @@ CREATE TABLE vol (
     FOREIGN KEY (id_ville_arrivee) REFERENCES ville(id)
 );
 
+CREATE TABLE siege_type (
+    id serial PRIMARY KEY,
+    nom VARCHAR(50) check(nom = 'economique' or nom = 'business')
+);
+
 -- Table des sièges
 CREATE TABLE siege (
     id serial PRIMARY KEY,
     id_vol INT NOT NULL,
-    numero_siege VARCHAR(10) NOT NULL,
-    type VARCHAR(10) NOT NULL, -- Utilisation du type ENUM défini
+    id_type INT NOT NULL,
     est_reserve BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_type) REFERENCES siege_type(id),
     FOREIGN KEY (id_vol) REFERENCES vol(id)
 );
 
@@ -61,10 +66,12 @@ CREATE TABLE siege (
 CREATE TABLE reservation (
     id serial PRIMARY KEY,
     id_user INT NOT NULL,
+    id_type INT NOT NULL,
     id_vol INT NOT NULL,
     nombre INT NOT NULL,
     date_reservation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Utilisation de TIMESTAMP au lieu de DATETIME
     FOREIGN KEY (id_user) REFERENCES users(id),
+    FOREIGN KEY (id_type) REFERENCES siege_type(id),
     FOREIGN KEY (id_vol) REFERENCES vol(id)
 );
 

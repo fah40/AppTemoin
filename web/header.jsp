@@ -52,12 +52,16 @@
 
       <li class="nav-item">
         <a class="nav-link " href="reservation">
-          <i class="fa fa-clipboard-check"></i>
+          <i class="fa fa-ticket-alt"></i>
           <span>Billet</span>
         </a>
       </li><!-- End Transformation Nav -->
     </ul>
 
+    <a style="position:fixed; bottom:20px;" class="btn btn-secondary" href="deconnection">
+          <i class="fa fa-door"></i>
+          <span>deconnecter</span>
+        </a>
   </aside><!-- End Sidebar-->
 
   <main id="main" class="main">

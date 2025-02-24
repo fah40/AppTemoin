@@ -10,6 +10,10 @@ INSERT INTO avion (modele, nbr_siege_economique, nbr_siege_business) VALUES
 ('Boeing 777', 250, 50),
 ('Embraer E195', 120, 10);
 
+INSERT INTO siege_type (nom) VALUES
+('economique'),
+('business');
+
 -- Ajout des vols avec des dates corrigées
 INSERT INTO vol (numero_vol, id_avion, id_ville_depart, id_ville_arrivee, date_depart, date_arrivee, prix_economique, prix_business) VALUES
 ('AF101', 1, 1, 2, '2025-06-10 08:00:00', '2025-06-10 14:00:00', 500, 1500),  -- Paris → New York

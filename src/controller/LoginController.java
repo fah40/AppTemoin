@@ -39,4 +39,14 @@ public class LoginController {
         
         return model;
     }
+
+    @Get
+    @Url(url = "AppTemoin/deconnection")
+    public ModelView deconnection()
+            throws Exception {
+        ModelView model= new ModelView();
+        model.setUrl("login.jsp");
+        session.destroy();
+        return model;
+    }
 }
