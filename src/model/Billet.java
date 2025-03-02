@@ -1,23 +1,48 @@
 package model;
+
 import java.sql.*;
 import java.util.*;
 import db.MyConnect;
 import use.*;
+
 public class Billet {
     private int id;
     private User user;
     private int id_vol;
+    private int id_reservation;
     private Reservation reservation;
-    private Siege siege;
+    private int id_type;
+    private Siege_type type;
     private double prix_final;
-    public Billet(){}
-    public Billet(String user,String id_vol,String reservation,String siege,String prix_final,Connection con) throws Exception{
-        setUser(user,con); 
-        setId_vol(id_vol); 
-        setReservation(reservation,con); 
-        setSiege(siege,con); 
-        setPrix_final(prix_final); 
+
+    public Billet() {
     }
+
+    public Billet(String user, String id_vol, String reservation, String siege, String prix_final, Connection con)
+            throws Exception {
+        setUser(user, con);
+        setId_vol(id_vol);
+        setReservation(reservation, con);
+        setSiege(siege, con);
+        setPrix_final(prix_final);
+    }
+
+    public int getId_type() {
+        return id_type;
+    }
+
+    public void setId_type(int id_type) {
+        this.id_type = id_type;
+    }
+
+    public int getId_reservation() {
+        return id_reservation;
+    }
+
+    public void setId_reservation(int id_reservation) {
+        this.id_reservation = id_reservation;
+    }
+
     public int getId() {
         return id;
     }
@@ -28,9 +53,9 @@ public class Billet {
     }
 
     public void setId(String id) throws Exception {
-        int toSet =  MyUtil.convertIntFromHtmlInput(id);
+        int toSet = MyUtil.convertIntFromHtmlInput(id);
 
-        setId(toSet) ;
+        setId(toSet);
     }
 
     public User getUser() {
@@ -41,11 +66,11 @@ public class Billet {
         this.user = user;
     }
 
-    public void setUser(String user,Connection con) throws Exception {
-         //define how this type should be conterted from String ... type : User
-        User toSet = User.getById(Integer.parseInt(user),con );
+    public void setUser(String user, Connection con) throws Exception {
+        // define how this type should be conterted from String ... type : User
+        User toSet = User.getById(Integer.parseInt(user), con);
 
-        setUser(toSet) ;
+        setUser(toSet);
     }
 
     public int getId_vol() {
@@ -58,9 +83,9 @@ public class Billet {
     }
 
     public void setId_vol(String id_vol) throws Exception {
-        int toSet =  MyUtil.convertIntFromHtmlInput(id_vol);
+        int toSet = MyUtil.convertIntFromHtmlInput(id_vol);
 
-        setId_vol(toSet) ;
+        setId_vol(toSet);
     }
 
     public Reservation getReservation() {
@@ -71,26 +96,26 @@ public class Billet {
         this.reservation = reservation;
     }
 
-    public void setReservation(String reservation,Connection con) throws Exception {
-         //define how this type should be conterted from String ... type : Reservation
-        Reservation toSet = Reservation.getById(Integer.parseInt(reservation),con );
+    public void setReservation(String reservation, Connection con) throws Exception {
+        // define how this type should be conterted from String ... type : Reservation
+        Reservation toSet = Reservation.getById(Integer.parseInt(reservation), con);
 
-        setReservation(toSet) ;
+        setReservation(toSet);
     }
 
-    public Siege getSiege() {
-        return siege;
+    public Siege_type getSiege() {
+        return type;
     }
 
-    public void setSiege(Siege siege) throws Exception {
-        this.siege = siege;
+    public void setSiege(Siege_type siege) throws Exception {
+        this.type = siege;
     }
 
-    public void setSiege(String siege,Connection con) throws Exception {
-         //define how this type should be conterted from String ... type : Siege
-        Siege toSet = Siege.getById(Integer.parseInt(siege),con );
+    public void setSiege(String siege, Connection con) throws Exception {
+        // define how this type should be conterted from String ... type : Siege
+        Siege_type toSet = Siege_type.getById(Integer.parseInt(siege), con);
 
-        setSiege(toSet) ;
+        setSiege(toSet);
     }
 
     public double getPrix_final() {
@@ -103,9 +128,9 @@ public class Billet {
     }
 
     public void setPrix_final(String prix_final) throws Exception {
-        double toSet =  MyUtil.convertDoubleFromHtmlInput(prix_final);
+        double toSet = MyUtil.convertDoubleFromHtmlInput(prix_final);
 
-        setPrix_final(toSet) ;
+        setPrix_final(toSet);
     }
 
     public static Billet getById(int id, Connection con) throws Exception {
@@ -122,24 +147,28 @@ public class Billet {
             if (rs.next()) {
                 instance = new Billet();
                 instance.setId(rs.getInt("id"));
-                instance.setUser(User.getById(rs.getInt("id_user") ,con ));
+                instance.setUser(User.getById(rs.getInt("id_user"), con));
                 instance.setId_vol(rs.getInt("id_vol"));
-                instance.setReservation(Reservation.getById(rs.getInt("id_reservation") ,con ));
-                instance.setSiege(Siege.getById(rs.getInt("id_siege") ,con ));
+                instance.setReservation(Reservation.getById(rs.getInt("id_reservation"), con));
+                instance.setId_reservation(rs.getInt("id_reservation"));
+                instance.setSiege(Siege_type.getById(rs.getInt("id_type"), con));
+                instance.setId_type(rs.getInt("id_type"));
                 instance.setPrix_final(rs.getDouble("prix_final"));
             }
         } catch (Exception e) {
-            throw e ;
+            throw e;
         } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
+
         }
 
         return instance;
     }
-    public static Billet[] getAll() throws Exception {
-        Connection con = MyConnect.getConnection();
+
+    public static Billet[] getAll(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         List<Billet> items = new ArrayList<>();
@@ -152,39 +181,68 @@ public class Billet {
             while (rs.next()) {
                 Billet item = new Billet();
                 item.setId(rs.getInt("id"));
-                item.setUser(User.getById(rs.getInt("id_user")  ,con ));
+                item.setUser(User.getById(rs.getInt("id_user"), con));
                 item.setId_vol(rs.getInt("id_vol"));
-                item.setReservation(Reservation.getById(rs.getInt("id_reservation")  ,con ));
-                item.setSiege(Siege.getById(rs.getInt("id_siege")  ,con ));
+                item.setReservation(Reservation.getById(rs.getInt("id_reservation"), con));
+                item.setId_reservation(rs.getInt("id_reservation"));
+                item.setSiege(Siege_type.getById(rs.getInt("id_type"), con));
+                item.setId_type(rs.getInt("id_type"));
                 item.setPrix_final(rs.getDouble("prix_final"));
                 items.add(item);
             }
         } catch (Exception e) {
-            throw e ;
+            throw e;
         } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
-            if (con != null && !false) con.close();
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
         }
 
         return items.toArray(new Billet[0]);
     }
+
+    public static int getcountByIdType(int id, Connection con) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        int rep = 0;
+
+        try {
+            String query = "SELECT SUM(*) as sumres FROM billet WHERE id_type = ?";
+            st = con.prepareStatement(query);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                rep = rs.getInt("sumres");
+            }
+        } catch (Exception e) {
+            throw new Exception("Failed to count reservations by type", e);
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
+        }
+        return rep;
+    }
+
     public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO billet (id_user, id_vol, id_reservation, id_siege, prix_final) VALUES (?, ?, ?, ?, ?) RETURNING id";
+            String query = "INSERT INTO billet (id_user, id_vol, id_reservation, id_type, prix_final) VALUES (?, ?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setInt(1, this.user.getId());
             st.setInt(2, this.id_vol);
-            st.setInt(3, this.reservation.getId());
-            st.setInt(4, this.siege.getId());
+            st.setInt(3, this.id_reservation);
+            st.setInt(4, this.id_type);
             st.setDouble(5, this.prix_final);
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
                     int generatedId = rs.getInt("id");
-                    this.setId(generatedId); 
+                    this.setId(generatedId);
                     con.commit();
                     return generatedId;
                 } else {
@@ -196,19 +254,22 @@ public class Billet {
                 throw new Exception("Failed to insert record", e);
             }
         } finally {
-            if (rs != null) rs.close();
-            if (st != null) st.close();
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
         }
     }
+
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE billet SET id_user = ?, id_vol = ?, id_reservation = ?, id_siege = ?, prix_final = ? WHERE id = ?";
+            String query = "UPDATE billet SET id_user = ?, id_vol = ?, id_reservation = ?, id_type = ?, prix_final = ? WHERE id = ?";
             st = con.prepareStatement(query);
-            st.setInt (1, this.user.getId());
+            st.setInt(1, this.user.getId());
             st.setInt(2, this.id_vol);
-            st.setInt (3, this.reservation.getId());
-            st.setInt (4, this.siege.getId());
+            st.setInt(3, this.reservation.getId());
+            st.setInt(4, this.type.getId());
             st.setDouble(5, this.prix_final);
             st.setInt(6, this.getId());
             try {
@@ -219,11 +280,13 @@ public class Billet {
                 throw new Exception("Failed to update record", e);
             }
         } finally {
-            if (st != null) st.close();
+            if (st != null)
+                st.close();
         }
     }
+
     public static void deleteById(int id) throws Exception {
-            Connection con = MyConnect.getConnection();
+        Connection con = MyConnect.getConnection();
         PreparedStatement st = null;
         try {
             String query = "DELETE FROM billet WHERE id = ?";
@@ -237,8 +300,10 @@ public class Billet {
                 throw new Exception("Failed to delete record", e);
             }
         } finally {
-            if (st != null) st.close();
-           if (con != null) con.close(); 
+            if (st != null)
+                st.close();
+            if (con != null)
+                con.close();
         }
     }
 }

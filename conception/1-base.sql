@@ -36,11 +36,15 @@ CREATE TABLE vol (
     id_avion INT NOT NULL,
     id_ville_depart INT NOT NULL,
     id_ville_arrivee INT NOT NULL,
-    date_depart TIMESTAMP NOT NULL, -- Utilisation de TIMESTAMP au lieu de DATETIME
-    date_arrivee TIMESTAMP NOT NULL, -- Utilisation de TIMESTAMP au lieu de DATETIME
+    date_depart TIMESTAMP NOT NULL,
+    date_arrivee TIMESTAMP NOT NULL,
     prix_economique DECIMAL(12,2) NOT NULL,
     prix_business DECIMAL(12,2) NOT NULL,
-    date_limite_reservation TIMESTAMP NOT NULL, -- Utilisation de TIMESTAMP au lieu de DATETIME
+    date_limite_reservation TIMESTAMP NOT NULL,
+    reduction DECIMAL(12,2),
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    mx_eco INT,
+    mx_bus INT,
     disponible BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_avion) REFERENCES avion(id),
     FOREIGN KEY (id_ville_depart) REFERENCES ville(id),
@@ -80,18 +84,9 @@ CREATE TABLE billet (
     id_user INT NOT NULL,
     id_vol INT NOT NULL,
     id_reservation INT NOT NULL,
-    id_siege INT NOT NULL,
+    id_type INT NOT NULL,
     prix_final DECIMAL(12,2) NOT NULL,
     FOREIGN KEY (id_user) REFERENCES users(id),
     FOREIGN KEY (id_reservation) REFERENCES reservation(id),
-    FOREIGN KEY (id_siege) REFERENCES siege(id)
-);
-
--- Table des promotions
-CREATE TABLE promotion (
-    id serial PRIMARY KEY,
-    id_vol INT NOT NULL,
-    reduction DECIMAL(12,2) NOT NULL,
-    nombre_max_reservations INT NOT NULL DEFAULT 3,
-    FOREIGN KEY (id_vol) REFERENCES vol(id)
+    FOREIGN KEY (id_type) REFERENCES siege_type(id)
 );

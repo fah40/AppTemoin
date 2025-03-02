@@ -68,8 +68,8 @@ public class ReservationController {
         try {
             con= MyConnect.getConnection();
             
-            reservation.insert(con);
-            
+            reservation.insertCorrectly(con,id_vol_curr);
+
             model.addObject("myVol", Vol.getById(id_vol_curr,con));
             model.addObject("typeSiege", Siege_type.getAll(con));
             model.addObject("listReservation", Reservation.getAll(con));

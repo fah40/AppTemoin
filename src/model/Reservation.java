@@ -135,6 +135,7 @@ public class Reservation {
         setDate_reservation(toSet);
     }
 
+    // Méthode getById
     public static Reservation getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
@@ -156,25 +157,51 @@ public class Reservation {
                 instance.setDate_reservation(rs.getTimestamp("date_reservation"));
             }
         } catch (Exception e) {
-            throw e;
+            throw new Exception("Failed to retrieve Reservation by ID", e);
         } finally {
             if (rs != null)
                 rs.close();
             if (st != null)
                 st.close();
-
         }
 
         return instance;
     }
 
+    // Méthode getcountByIdType
+    public static int getcountByIdType(int id, Connection con) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        int rep = 0;
+
+        try {
+            String query = "SELECT SUM(nombre) as sumres FROM reservation WHERE id_type = ?";
+            st = con.prepareStatement(query);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+
+            if (rs.next()) {
+                rep = rs.getInt("sumres");
+            }
+        } catch (Exception e) {
+            throw new Exception("Failed to count reservations by type", e);
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
+        }
+        return rep;
+    }
+
+    // Méthode getAll
     public static Reservation[] getAll(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         List<Reservation> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM reservation order by id asc ";
+            String query = "SELECT * FROM reservation ORDER BY id ASC";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -189,7 +216,7 @@ public class Reservation {
                 items.add(item);
             }
         } catch (Exception e) {
-            throw e;
+            throw new Exception("Failed to retrieve all reservations", e);
         } finally {
             if (rs != null)
                 rs.close();
@@ -200,9 +227,11 @@ public class Reservation {
         return items.toArray(new Reservation[0]);
     }
 
+    // Méthode insert
     public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
+
         try {
             String query = "INSERT INTO reservation (id_user, id_vol, id_type, nombre, date_reservation) VALUES (?, ?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
@@ -211,21 +240,20 @@ public class Reservation {
             st.setInt(3, this.id_type);
             st.setInt(4, this.nombre);
             st.setTimestamp(5, this.date_reservation);
-            try {
-                rs = st.executeQuery();
-                if (rs.next()) {
-                    int generatedId = rs.getInt("id");
-                    this.setId(generatedId);
-                    con.commit();
-                    return generatedId;
-                } else {
-                    con.rollback();
-                    throw new Exception("Failed to retrieve generated ID");
-                }
-            } catch (Exception e) {
+
+            rs = st.executeQuery();
+            if (rs.next()) {
+                int generatedId = rs.getInt("id");
+                this.setId(generatedId);
+                con.commit();
+                return generatedId;
+            } else {
                 con.rollback();
-                throw new Exception("Failed to insert record", e);
+                throw new Exception("Failed to retrieve generated ID");
             }
+        } catch (Exception e) {
+            con.rollback();
+            throw new Exception("Failed to insert reservation", e);
         } finally {
             if (rs != null)
                 rs.close();
@@ -234,50 +262,115 @@ public class Reservation {
         }
     }
 
+    public void insertCorrectly(Connection con, int id_vol_curr) throws Exception {
+        
+        Siege_type type= this.getType();
+        Vol vol= Vol.getById(id_vol_curr, con);
+        Avion avion= vol.getAvion();
+        int id_reservation= 0;
+        int max_siege= 0;
+        int reservationrestant = 0;
+        int countBillet = 0;
+        double prix = 0;
+        double prixPromo = 0;
+        double promoMax = 0;
+        
+        if (type.getNom().compareTo("economique") == 0) {
+            prix = vol.getPrix_economique();
+            prixPromo = vol.getPrix_economique() * vol.getReduction();
+            max_siege= avion.getNbr_siege_economique();
+            promoMax = vol.getPro_max_eco();
+        }else{
+            prix = vol.getPrix_business();
+            prixPromo = vol.getPrix_business() * vol.getReduction();
+            max_siege= avion.getNbr_siege_business();
+            promoMax = vol.getPro_max_bus();
+        }
+
+        reservationrestant = max_siege - Reservation.getcountByIdType(type.getId(), con);
+        countBillet = Billet.getcountByIdType(type.getId(), con);
+
+        if (reservationrestant > this.getNombre()) {
+            id_reservation = this.insert(con);
+            int i=0;
+            if(countBillet < promoMax){
+                // realisation de la reduction
+                while (i < this.getNombre()) {
+                    // realisation de la reduction
+                    Billet bl = new Billet();
+
+                    bl.setId_vol(id_vol_curr);
+                    bl.setId_reservation(id_reservation);
+                    bl.setSiege(type);
+                    bl.setPrix_final(prixPromo);
+                }
+            }else{
+                while (i < this.getNombre()) {
+                    Billet bl = new Billet();
+
+                    bl.setId_vol(id_vol_curr);
+                    bl.setId_reservation(id_reservation);
+                    bl.setSiege(type);
+                    bl.setPrix_final(prix);
+                }
+            }
+        }else{
+            throw new Exception("Number of seats not enough !");
+        }
+    }
+
+    // Méthode update
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
+
         try {
-            String query = "UPDATE reservation SET id_user = ?, id_vol = ?, nombre = ?, date_reservation = ? WHERE id = ?";
+            String query = "UPDATE reservation SET id_user = ?, id_vol = ?, id_type = ?, nombre = ?, date_reservation = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, this.user.getId());
             st.setInt(2, this.vol.getId());
-            st.setInt(3, this.nombre);
-            st.setTimestamp(4, this.date_reservation);
-            st.setInt(5, this.getId());
-            try {
-                st.executeUpdate();
+            st.setInt(3, this.type.getId());
+            st.setInt(4, this.nombre);
+            st.setTimestamp(5, this.date_reservation);
+            st.setInt(6, this.getId());
+
+            int rowsUpdated = st.executeUpdate();
+            if (rowsUpdated > 0) {
                 con.commit();
-            } catch (Exception e) {
+            } else {
                 con.rollback();
-                throw new Exception("Failed to update record", e);
+                throw new Exception("No record found to update");
             }
+        } catch (Exception e) {
+            con.rollback();
+            throw new Exception("Failed to update reservation", e);
         } finally {
             if (st != null)
                 st.close();
         }
     }
 
-    public static void deleteById(int id) throws Exception {
-        Connection con = MyConnect.getConnection();
+    // Méthode deleteById
+    public static void deleteById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
+
         try {
             String query = "DELETE FROM reservation WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
-            try {
-                st.executeUpdate();
+
+            int rowsDeleted = st.executeUpdate();
+            if (rowsDeleted > 0) {
                 con.commit();
-            } catch (Exception e) {
+            } else {
                 con.rollback();
-                throw new Exception("Failed to delete record", e);
+                throw new Exception("No record found to delete");
             }
+        } catch (Exception e) {
+            con.rollback();
+            throw new Exception("Failed to delete reservation", e);
         } finally {
             if (st != null)
                 st.close();
-            if (con != null)
-                con.close();
         }
     }
 }
-
-// Commun'IT app

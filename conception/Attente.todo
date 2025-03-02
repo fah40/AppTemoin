@@ -27,3 +27,18 @@ ERCAN :
             - class siege
             - (promotion ou non)
 
+- ========================================================
+
+- insertion reservation
+    - ok check le Type sigege
+    - ok get le nombre de siege dans l'avion selon le type
+    - ok verifier si le nombre de siege restant est assez pour le nombre de reservation
+    - si c'est le cas , 
+        - get le count( billet )
+        - get nombre max promotion
+        - si c'est le count(billet) < nombre max promo
+            - realiser la reduction sur le billet
+                - prix final = prix * % promotion
+    - si c'est pas le cas throw exception
+
+    - 
