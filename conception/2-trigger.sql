@@ -30,161 +30,6 @@ AFTER INSERT ON vol
 FOR EACH ROW
 EXECUTE FUNCTION ajouter_sieges_apres_creation_vol();
 
--- ======================================================= RESERVATION
-CREATE OR REPLACE FUNCTION tr_promotion_premieres_reservations() 
-RETURNS TRIGGER AS $$
-DECLARE
-    count_reservations INT;
-    promo_reduction DECIMAL(5,2) := 0;
-    promo_max INT := 0;
-BEGIN
-    -- Vérifier s'il existe une promotion pour ce vol
-    SELECT reduction, nombre_max_reservations 
-    INTO promo_reduction, promo_max
-    FROM promotion
-    WHERE id_vol = NEW.id_vol
-    LIMIT 1;
-
-    -- Si aucune promotion n'existe, ne rien modifier
-    IF promo_reduction IS NULL OR promo_max IS NULL THEN
-        RETURN NEW;
-    END IF;
-
-    -- Compter le nombre de réservations existantes pour ce vol
-    SELECT COUNT(*) INTO count_reservations 
-    FROM billet 
-    WHERE id_vol = NEW.id_vol;
-
-    -- Appliquer la promotion seulement si on est encore dans la limite
-    IF count_reservations < promo_max THEN
-        NEW.prix_final := NEW.prix_final * (1 - promo_reduction / 100);
-    ELSE
-        -- Appliquer la réduction sur le prix économique
-        SELECT prix_economique - v_prix_final INTO v_prix_final FROM vol WHERE id = NEW.id_vol;
-    END IF;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-
--- Définition du trigger
-CREATE TRIGGER tr_promotion_premieres_reservations_trigger
-AFTER INSERT ON reservation
-FOR EACH ROW
-EXECUTE FUNCTION tr_promotion_premieres_reservations();
-
--- ======================================================= GENERATION BILLET
-CREATE OR REPLACE FUNCTION tr_promotion_premieres_reservations() 
-RETURNS TRIGGER AS $$
-DECLARE 
-    count_billet INT;
-    promo_reduction DECIMAL(5,2) := 0;
-    v_prix_final DECIMAL(5,2);
-    promo_max INT := 0;
-    v_compteur INT := 0;
-    v_siege_id INT ;
-BEGIN
-    -- Vérifier s'il existe une promotion pour ce vol
-    SELECT reduction, nombre_max_reservations 
-    INTO promo_reduction, promo_max
-    FROM promotion
-    WHERE id_vol = NEW.id_vol
-    LIMIT 1;
-
-    -- Si aucune promotion n'existe, ne rien modifier
-    IF promo_reduction IS NULL OR promo_max IS NULL THEN
-        RETURN NEW;
-    END IF;
-    
-    -- Boucle pour insérer autant de billets que de places réservées
-    WHILE v_compteur < NEW.nombre LOOP
-        SELECT COUNT(*) INTO count_billet 
-        FROM billet 
-        WHERE id_vol = NEW.id_vol;
-
-        SELECT id INTO v_siege_id 
-            FROM siege 
-            WHERE id_vol = NEW.id_vol 
-            AND est_reserve = FALSE 
-            LIMIT 1;
-
-        -- Appliquer la promotion seulement si on est encore dans la limite
-        IF count_billet < promo_max THEN
-            v_prix_final = NEW.prix_final * promo_reduction;
-        ELSE
-            v_prix_final = NEW.prix_final;
-        END IF;
-
-        IF v_siege_id IS NOT NULL THEN
-                -- Insérer le billet pour ce siège
-                INSERT INTO billet (id_user, id_vol, id_reservation, id_siege, prix_final)
-                VALUES (NEW.id_user, NEW.id_vol, NEW.id, v_siege_id, v_prix_final);
-
-                -- Marquer le siège comme réservé
-                UPDATE siege SET est_reserve = TRUE WHERE id = v_siege_id;
-            ELSE
-                -- Si plus de sièges disponibles, arrêter la boucle
-                EXIT;
-            END IF;
-
-            v_compteur := v_compteur + 1;
-    END LOOP;
-    
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-
--- Définition du trigger
-CREATE TRIGGER tr_promotion_premieres_reservations_trigger
-AFTER INSERT ON reservation
-FOR EACH ROW
-EXECUTE FUNCTION tr_promotion_premieres_reservations();
-
--- ======================================================= BILLETS
-CREATE OR REPLACE FUNCTION tr_generer_billets() 
-RETURNS TRIGGER AS $$
-DECLARE
-    v_compteur INT := 0;
-BEGIN
-    -- Boucle pour insérer autant de billets que de places réservées
-    WHILE v_compteur < NEW.nombre LOOP
-        -- Sélectionner un siège disponible
-        SELECT id INTO v_siege_id 
-        FROM siege 
-        WHERE id_vol = NEW.id_vol 
-        AND est_reserve = FALSE 
-        LIMIT 1;
-
-        -- Vérifier si un siège a été trouvé
-        IF v_siege_id IS NOT NULL THEN
-            -- Insérer le billet pour ce siège
-            INSERT INTO billet (id_user, id_vol, id_reservation, id_siege, prix_final)
-            VALUES (NEW.id_user, NEW.id_vol, NEW.id, v_siege_id, v_prix_final);
-
-            -- Marquer le siège comme réservé
-            UPDATE siege SET est_reserve = TRUE WHERE id = v_siege_id;
-        ELSE
-            -- Si plus de sièges disponibles, arrêter la boucle
-            EXIT;
-        END IF;
-
-        v_compteur := v_compteur + 1;
-    END LOOP;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- Définition du trigger
-CREATE TRIGGER tr_generer_billets_trigger
-AFTER INSERT ON reservation
-FOR EACH ROW
-EXECUTE FUNCTION tr_generer_billets();
-
-
 -- ======================================================= ANNULATION RESERVATION - BILLET
 CREATE OR REPLACE FUNCTION tr_annulation_billet() 
 RETURNS TRIGGER AS $$
@@ -199,7 +44,7 @@ $$ LANGUAGE plpgsql;
 
 -- Définition du trigger
 CREATE TRIGGER tr_annulation_billet_trigger
-AFTER DELETE ON reservation
+BEFORE DELETE ON reservation
 FOR EACH ROW
 EXECUTE FUNCTION tr_annulation_billet();
 
@@ -221,5 +66,162 @@ CREATE TRIGGER tr_liberer_siege_trigger
 AFTER DELETE ON billet
 FOR EACH ROW
 EXECUTE FUNCTION tr_liberer_siege();
+
+
+-- -- ======================================================= RESERVATION
+-- CREATE OR REPLACE FUNCTION tr_promotion_premieres_reservations() 
+-- RETURNS TRIGGER AS $$
+-- DECLARE
+--     count_reservations INT;
+--     promo_reduction DECIMAL(5,2) := 0;
+--     promo_max INT := 0;
+-- BEGIN
+--     -- Vérifier s'il existe une promotion pour ce vol
+--     SELECT reduction, nombre_max_reservations 
+--     INTO promo_reduction, promo_max
+--     FROM promotion
+--     WHERE id_vol = NEW.id_vol
+--     LIMIT 1;
+
+--     -- Si aucune promotion n'existe, ne rien modifier
+--     IF promo_reduction IS NULL OR promo_max IS NULL THEN
+--         RETURN NEW;
+--     END IF;
+
+--     -- Compter le nombre de réservations existantes pour ce vol
+--     SELECT COUNT(*) INTO count_reservations 
+--     FROM billet 
+--     WHERE id_vol = NEW.id_vol;
+
+--     -- Appliquer la promotion seulement si on est encore dans la limite
+--     IF count_reservations < promo_max THEN
+--         NEW.prix_final := NEW.prix_final * (1 - promo_reduction / 100);
+--     ELSE
+--         -- Appliquer la réduction sur le prix économique
+--         SELECT prix_economique - v_prix_final INTO v_prix_final FROM vol WHERE id = NEW.id_vol;
+--     END IF;
+
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+
+-- -- Définition du trigger
+-- CREATE TRIGGER tr_promotion_premieres_reservations_trigger
+-- AFTER INSERT ON reservation
+-- FOR EACH ROW
+-- EXECUTE FUNCTION tr_promotion_premieres_reservations();
+
+-- -- ======================================================= GENERATION BILLET
+-- CREATE OR REPLACE FUNCTION tr_promotion_premieres_reservations() 
+-- RETURNS TRIGGER AS $$
+-- DECLARE 
+--     count_billet INT;
+--     promo_reduction DECIMAL(5,2) := 0;
+--     v_prix_final DECIMAL(5,2);
+--     promo_max INT := 0;
+--     v_compteur INT := 0;
+--     v_siege_id INT ;
+-- BEGIN
+--     -- Vérifier s'il existe une promotion pour ce vol
+--     SELECT reduction, nombre_max_reservations 
+--     INTO promo_reduction, promo_max
+--     FROM promotion
+--     WHERE id_vol = NEW.id_vol
+--     LIMIT 1;
+
+--     -- Si aucune promotion n'existe, ne rien modifier
+--     IF promo_reduction IS NULL OR promo_max IS NULL THEN
+--         RETURN NEW;
+--     END IF;
+    
+--     -- Boucle pour insérer autant de billets que de places réservées
+--     WHILE v_compteur < NEW.nombre LOOP
+--         SELECT COUNT(*) INTO count_billet 
+--         FROM billet 
+--         WHERE id_vol = NEW.id_vol;
+
+--         SELECT id INTO v_siege_id 
+--             FROM siege 
+--             WHERE id_vol = NEW.id_vol 
+--             AND est_reserve = FALSE 
+--             LIMIT 1;
+
+--         -- Appliquer la promotion seulement si on est encore dans la limite
+--         IF count_billet < promo_max THEN
+--             v_prix_final = NEW.prix_final * promo_reduction;
+--         ELSE
+--             v_prix_final = NEW.prix_final;
+--         END IF;
+
+--         IF v_siege_id IS NOT NULL THEN
+--                 -- Insérer le billet pour ce siège
+--                 INSERT INTO billet (id_user, id_vol, id_reservation, id_siege, prix_final)
+--                 VALUES (NEW.id_user, NEW.id_vol, NEW.id, v_siege_id, v_prix_final);
+
+--                 -- Marquer le siège comme réservé
+--                 UPDATE siege SET est_reserve = TRUE WHERE id = v_siege_id;
+--             ELSE
+--                 -- Si plus de sièges disponibles, arrêter la boucle
+--                 EXIT;
+--             END IF;
+
+--             v_compteur := v_compteur + 1;
+--     END LOOP;
+    
+
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+
+-- -- Définition du trigger
+-- CREATE TRIGGER tr_promotion_premieres_reservations_trigger
+-- AFTER INSERT ON reservation
+-- FOR EACH ROW
+-- EXECUTE FUNCTION tr_promotion_premieres_reservations();
+
+-- ======================================================= BILLETS
+-- CREATE OR REPLACE FUNCTION tr_generer_billets() 
+-- RETURNS TRIGGER AS $$
+-- DECLARE
+--     v_compteur INT := 0;
+-- BEGIN
+--     -- Boucle pour insérer autant de billets que de places réservées
+--     WHILE v_compteur < NEW.nombre LOOP
+--         -- Sélectionner un siège disponible
+--         SELECT id INTO v_siege_id 
+--         FROM siege 
+--         WHERE id_vol = NEW.id_vol 
+--         AND est_reserve = FALSE 
+--         LIMIT 1;
+
+--         -- Vérifier si un siège a été trouvé
+--         IF v_siege_id IS NOT NULL THEN
+--             -- Insérer le billet pour ce siège
+--             INSERT INTO billet (id_user, id_vol, id_reservation, id_siege, prix_final)
+--             VALUES (NEW.id_user, NEW.id_vol, NEW.id, v_siege_id, v_prix_final);
+
+--             -- Marquer le siège comme réservé
+--             UPDATE siege SET est_reserve = TRUE WHERE id = v_siege_id;
+--         ELSE
+--             -- Si plus de sièges disponibles, arrêter la boucle
+--             EXIT;
+--         END IF;
+
+--         v_compteur := v_compteur + 1;
+--     END LOOP;
+
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+-- -- Définition du trigger
+-- CREATE TRIGGER tr_generer_billets_trigger
+-- AFTER INSERT ON reservation
+-- FOR EACH ROW
+-- EXECUTE FUNCTION tr_generer_billets();
+
+
 
 

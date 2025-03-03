@@ -28,12 +28,23 @@ BACKOFFICE :
 
 FRONTOFFICE :
     ✔ page login @done(25-02-19 13:46)
-    ☐ redirection vers list vol et insertion reservation
-    ☐ page formulaire d'insertion reservation
-        ☐ liste vol
-        ☐ type siege
-        ☐ reste count(siege)
+    ✔ redirection vers list vol et insertion reservation @done(25-03-03 16:29)
+    ✔ page formulaire d'insertion reservation @done(25-03-03 16:29)
+        ✔ liste vol @done(25-03-03 16:29)
+
+        
         ☐ check date limite reservation
+        ✔ check le Type sigege @done(25-03-03 16:28)
+        ✔ get le nombre de siege dans l'avion selon le type @done(25-03-03 16:28)
+        ✔ verifier si le nombre de siege restant est assez pour le nombre de reservation @done(25-03-03 16:28)
+        si c'est le cas , 
+            ✔ get le count( billet ) @done(25-03-03 16:28)
+            ✔ get nombre max promotion @done(25-03-03 16:28)
+            si c'est le count(billet) < nombre max promo
+                ✔ realiser la reduction sur le billet @done(25-03-03 16:28)
+                    ✔ prix finadl = prix * % promotion @done(25-03-03 16:28)
+        ✔ si c'est pas le cas throw exception @done(25-03-03 16:28)
+
     ☐ recherche multicritere [ date - pay ]
 
 

@@ -264,7 +264,7 @@ public class Reservation {
 
     public void insertCorrectly(Connection con, int id_vol_curr) throws Exception {
         
-        Siege_type type= this.getType();
+        Siege_type type= Siege_type.getById(this.getId_type(), con);
         Vol vol= Vol.getById(id_vol_curr, con);
         Avion avion= vol.getAvion();
         int id_reservation= 0;
@@ -288,32 +288,30 @@ public class Reservation {
         }
 
         reservationrestant = max_siege - Reservation.getcountByIdType(type.getId(), con);
-        countBillet = Billet.getcountByIdType(type.getId(), con);
-
+        
         if (reservationrestant > this.getNombre()) {
             id_reservation = this.insert(con);
             int i=0;
-            if(countBillet < promoMax){
+            // realisation de la reduction
+            while (i < this.getNombre()) {
+                countBillet = Billet.getcountByIdType(type.getId(), con);
                 // realisation de la reduction
-                while (i < this.getNombre()) {
-                    // realisation de la reduction
-                    Billet bl = new Billet();
+                Billet bl = new Billet();
+                
+                bl.setId_vol(id_vol_curr);
+                bl.setId_reservation(id_reservation);
+                bl.setSiege(type);
 
-                    bl.setId_vol(id_vol_curr);
-                    bl.setId_reservation(id_reservation);
-                    bl.setSiege(type);
+                if(countBillet < promoMax){
                     bl.setPrix_final(prixPromo);
-                }
-            }else{
-                while (i < this.getNombre()) {
-                    Billet bl = new Billet();
-
-                    bl.setId_vol(id_vol_curr);
-                    bl.setId_reservation(id_reservation);
-                    bl.setSiege(type);
+                }else{
                     bl.setPrix_final(prix);
                 }
+
+                bl.insert(con);
+                i++;
             }
+            
         }else{
             throw new Exception("Number of seats not enough !");
         }

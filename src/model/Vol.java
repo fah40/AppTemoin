@@ -20,8 +20,8 @@ public class Vol {
     private int pro_max_eco;
     private int pro_max_bus;
     private java.sql.Timestamp insert_date;
-
     private boolean disponible;
+
     private Avion avion;
     private Ville ville_depart;
     private Ville ville_arrivee;
@@ -331,8 +331,8 @@ public class Vol {
                 item.setPrix_business(rs.getDouble("prix_business"));
                 item.setDate_limite_reservation(rs.getTimestamp("date_limite_reservation"));
                 item.setReduction(rs.getDouble("reduction"));
-                item.setPro_max_eco(rs.getInt("pro_max_eco"));
-                item.setPro_max_bus(rs.getInt("pro_max_bus"));
+                item.setPro_max_eco(rs.getInt("mx_eco"));
+                item.setPro_max_bus(rs.getInt("mx_bus"));
                 item.setInsert_date(rs.getTimestamp("insert_date"));
                 item.setDisponible(rs.getBoolean("disponible"));
                 item.setAvion(Avion.getById(rs.getInt("id_avion"), con));
