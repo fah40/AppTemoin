@@ -202,13 +202,48 @@ public class Billet {
         return items.toArray(new Billet[0]);
     }
 
+    public static Billet[] getAllMyBillet(Connection con,int id_user) throws Exception {
+        PreparedStatement st = null;
+        ResultSet rs = null;
+        List<Billet> items = new ArrayList<>();
+
+        try {
+            String query = "SELECT * FROM billet WHERE id_user = ? order by id asc ";
+            st = con.prepareStatement(query);
+            st.setInt(1, id_user);
+            rs = st.executeQuery();
+
+            while (rs.next()) {
+                Billet item = new Billet();
+                item.setId(rs.getInt("id"));
+                item.setUser(User.getById(rs.getInt("id_user"), con));
+                item.setId_vol(rs.getInt("id_vol"));
+                item.setReservation(Reservation.getById(rs.getInt("id_reservation"), con));
+                item.setId_reservation(rs.getInt("id_reservation"));
+                item.setSiege(Siege_type.getById(rs.getInt("id_type"), con));
+                item.setId_type(rs.getInt("id_type"));
+                item.setPrix_final(rs.getDouble("prix_final"));
+                items.add(item);
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            if (rs != null)
+                rs.close();
+            if (st != null)
+                st.close();
+        }
+
+        return items.toArray(new Billet[0]);
+    }
+
     public static int getcountByIdType(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         int rep = 0;
 
         try {
-            String query = "SELECT SUM(*) as sumres FROM billet WHERE id_type = ?";
+            String query = "SELECT count(*) as sumres FROM billet WHERE id_type = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();

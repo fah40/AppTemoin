@@ -55,7 +55,7 @@
                       </table>
 
                   <!-- End Default Table Example -->
-                <h3 class="alert alert-warning">Reserver</h3>
+                <h3 class="alert alert-warning">Reservation</h3>
                 <h3>Nom : <b><%= user.getNom() %></b></h3>
 
                   <!-- Multi Columns Form -->

@@ -13,6 +13,7 @@
 
         <!-- Left side columns -->
         <div class="col-lg-12">
+
           <div class="row">
 
             <!-- Top Selling -->
@@ -20,10 +21,10 @@
 
               <div class="card">
                 <div class="card-body">
-                  <h2 class="card-title">Reservation </h2>
+                  <h2 class="card-title">Reserver </h2>
                   <form class="row g-3" action="ResultService" method="get">
                     <div class="col-md-2">
-                      <select id="inputState" class="form-select" name="vol.idAvion">
+                      <select id="inputState" class="form-select" name="idAvion">
                         <option selected>choisir...</option>
                         <% for(int x=0;x< listAvion.length;x++) {%>
                         <option value="<%=listAvion[x].getId()%>"><%=listAvion[x].getModele()%></option>
@@ -31,7 +32,7 @@
                       </select>
                     </div>
                     <div class="col-md-2">
-                      <select id="inputState" class="form-select" name="vol.idVilleArrivee">
+                      <select id="inputState" class="form-select" name="idDestination">
                         <option selected>destination ...</option>
                         <% for(int c=0;c< listVille.length;c++) {%>
                         <option value="<%=listVille[c].getId()%>"><%=listVille[c].getNom()%></option>
@@ -39,7 +40,10 @@
                       </select>
                     </div>
                     <div class="col-md-2">
-                      <input type="datetime-local" class="form-control" id="" name="vol.dateDepart">
+                      <input type="datetime-local" class="form-control" id="" name="datemin">
+                    </div>
+                    <div class="col-md-2">
+                      <input type="datetime-local" class="form-control" id="" name="datemax">
                     </div>
                     <div class="col-md-2">
                       <button type="submit" class="btn btn-primary">show</button>
@@ -52,7 +56,7 @@
                       <table class="table">
                         <thead>
                           <tr>
-                            <th scope="col">#ref-vol</th>
+                            <th scope="col">-</th>
                             <th scope="col">#ref-Avion</th>
                             <th scope="col">Ville depart</th>
                             <th scope="col">destination</th>
@@ -66,7 +70,7 @@
                         <tbody>
                           <% for(int n=0;n< listVol.length;n++) {%>
                             <tr>
-                              <th scope="row"><a class="btn btn-primary" href="reserver?idVol=<%=listVol[n].getId() %>"><%=listVol[n].getNumero_vol() %></a></th>
+                              <th scope="row"><a class="btn btn-primary" href="reserver?idVol=<%=listVol[n].getId() %>">reserver</a></th>
                               <th scope="row"><%=listVol[n].getAvion().getModele() %></th>
                               <td><%=listVol[n].getVille_depart().getNom() %></td>
                               <td><%=listVol[n].getVille_arrivee().getNom() %></td>
@@ -76,7 +80,7 @@
                               <td><%=listVol[n].getPrix_business() %></td>
                               <td><%=listVol[n].getDate_limite_reservation() %></td>
                             </tr>
-                          <%}%>
+                          <% } %>
                         </tbody>
                       </table>
 

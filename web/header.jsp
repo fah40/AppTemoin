@@ -51,7 +51,7 @@
       </li><!-- End Transformation Nav -->
 
       <li class="nav-item">
-        <a class="nav-link " href="reservation">
+        <a class="nav-link " href="billet">
           <i class="fa fa-ticket-alt"></i>
           <span>Billet</span>
         </a>

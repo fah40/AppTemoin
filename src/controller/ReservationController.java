@@ -67,16 +67,21 @@ public class ReservationController {
         ModelView model= new ModelView();
         try {
             con= MyConnect.getConnection();
-            
-            reservation.insertCorrectly(con,id_vol_curr);
+            Vol curVol = Vol.getById(id_vol_curr,con);
+            if (reservation.getDate_reservation().before(curVol.getDate_limite_reservation())) {
+                reservation.insertCorrectly(con,id_vol_curr);
+                model.addObject("myVol", curVol);
+                model.addObject("typeSiege", Siege_type.getAll(con));
+                model.addObject("listReservation", Reservation.getAll(con));
+                model.setUrl("reserver.jsp");
+            }else{
+                model.addObject("error", "date limite reservation depasse !");
+                model.setUrl("error.jsp");
+            }
 
-            model.addObject("myVol", Vol.getById(id_vol_curr,con));
-            model.addObject("typeSiege", Siege_type.getAll(con));
-            model.addObject("listReservation", Reservation.getAll(con));
-
-            model.setUrl("reserver.jsp");
         } catch (Exception e) {
-            e.printStackTrace();
+            model.addObject("error", e.getMessage());
+            model.setUrl("error.jsp");
         }finally{
             if (con != null) {
                 con.close();

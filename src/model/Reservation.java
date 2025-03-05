@@ -16,6 +16,16 @@ public class Reservation {
     private Siege_type type;
     private User user;
     private Vol vol;
+    private double total;
+
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
 
     public Siege_type getType() {
         return type;
@@ -232,6 +242,7 @@ public class Reservation {
         PreparedStatement st = null;
         ResultSet rs = null;
 
+
         try {
             String query = "INSERT INTO reservation (id_user, id_vol, id_type, nombre, date_reservation) VALUES (?, ?, ?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
@@ -274,10 +285,12 @@ public class Reservation {
         double prix = 0;
         double prixPromo = 0;
         double promoMax = 0;
+        double reduce = 0;
         
         if (type.getNom().compareTo("economique") == 0) {
             prix = vol.getPrix_economique();
-            prixPromo = vol.getPrix_economique() * vol.getReduction();
+            reduce = vol.getPrix_economique() * vol.getReduction();
+            prixPromo = vol.getPrix_economique() - reduce;
             max_siege= avion.getNbr_siege_economique();
             promoMax = vol.getPro_max_eco();
         }else{
@@ -289,7 +302,7 @@ public class Reservation {
 
         reservationrestant = max_siege - Reservation.getcountByIdType(type.getId(), con);
         
-        if (reservationrestant > this.getNombre()) {
+        if (reservationrestant >= this.getNombre()) {
             id_reservation = this.insert(con);
             int i=0;
             // realisation de la reduction
@@ -298,9 +311,10 @@ public class Reservation {
                 // realisation de la reduction
                 Billet bl = new Billet();
                 
+                bl.setUser(User.getById(this.id_user, con));
                 bl.setId_vol(id_vol_curr);
                 bl.setId_reservation(id_reservation);
-                bl.setSiege(type);
+                bl.setId_type(type.getId());
 
                 if(countBillet < promoMax){
                     bl.setPrix_final(prixPromo);
@@ -313,7 +327,7 @@ public class Reservation {
             }
             
         }else{
-            throw new Exception("Number of seats not enough !");
+            throw new Exception("le nombre de Siege n'est pas assez!");
         }
     }
 

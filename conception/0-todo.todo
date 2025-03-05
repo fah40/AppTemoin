@@ -24,7 +24,6 @@ BACKOFFICE :
         ✔ date limite reservation @done(25-02-19 11:55)
 
         ☐ liste vol avec bouton CRUD
-        ☐ annulation vol [ FALSE ]
 
 FRONTOFFICE :
     ✔ page login @done(25-02-19 13:46)
@@ -33,7 +32,7 @@ FRONTOFFICE :
         ✔ liste vol @done(25-03-03 16:29)
 
         
-        ☐ check date limite reservation
+        ✔ check date limite reservation @done(25-03-05 09:33)
         ✔ check le Type sigege @done(25-03-03 16:28)
         ✔ get le nombre de siege dans l'avion selon le type @done(25-03-03 16:28)
         ✔ verifier si le nombre de siege restant est assez pour le nombre de reservation @done(25-03-03 16:28)

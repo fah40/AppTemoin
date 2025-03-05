@@ -20,7 +20,7 @@ body {
 }
 
 a {
-  color: #e89506;
+  color: #064ee8;
   text-decoration: none;
 }
 
@@ -77,7 +77,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 99999;
-  background: #e89506;
+  background: #064ee8;
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -294,7 +294,7 @@ h6 {
 
 .accordion-flush .accordion-button:not(.collapsed) {
   box-shadow: none;
-  color: #e89506;
+  color: #064ee8;
 }
 
 .accordion-flush .accordion-body {
@@ -342,13 +342,13 @@ h6 {
 
 .nav-tabs-bordered .nav-link:hover,
 .nav-tabs-bordered .nav-link:focus {
-  color: #e89506;
+  color: #064ee8;
 }
 
 .nav-tabs-bordered .nav-link.active {
   background-color: #fff;
-  color: #e89506;
-  border-bottom: 2px solid #e89506;
+  color: #064ee8;
+  border-bottom: 2px solid #064ee8;
 }
 
 /*--------------------------------------------------------------
@@ -684,7 +684,7 @@ h6 {
   align-items: center;
   font-size: 15px;
   font-weight: 600;
-  color: #e89506;
+  color: #064ee8;
   transition: 0.3;
   background: #f6f9ff;
   padding: 10px 15px;
@@ -694,7 +694,7 @@ h6 {
 .sidebar-nav .nav-link i {
   font-size: 16px;
   margin-right: 10px;
-  color: #e89506;
+  color: #064ee8;
 }
 
 .sidebar-nav .nav-link.collapsed {
@@ -707,12 +707,12 @@ h6 {
 }
 
 .sidebar-nav .nav-link:hover {
-  color: #e89506;
+  color: #064ee8;
   background: #f6f9ff;
 }
 
 .sidebar-nav .nav-link:hover i {
-  color: #e89506;
+  color: #064ee8;
 }
 
 .sidebar-nav .nav-link .bi-chevron-down {
@@ -750,11 +750,11 @@ h6 {
 
 .sidebar-nav .nav-content a:hover,
 .sidebar-nav .nav-content a.active {
-  color: #e89506;
+  color: #064ee8;
 }
 
 .sidebar-nav .nav-content a.active i {
-  background-color: #e89506;
+  background-color: #064ee8;
 }
 
 /*--------------------------------------------------------------
@@ -777,7 +777,7 @@ h6 {
 
 .dashboard .filter .icon:hover,
 .dashboard .filter .icon:focus {
-  color: #e89506;
+  color: #064ee8;
 }
 
 .dashboard .filter .dropdown-header {
@@ -821,7 +821,7 @@ h6 {
 }
 
 .dashboard .sales-card .card-icon {
-  color: #e89506;
+  color: #064ee8;
   background: #f6f6fe;
 }
 
@@ -906,7 +906,7 @@ h6 {
 }
 
 .dashboard .news h4 a:hover {
-  color: #e89506;
+  color: #064ee8;
 }
 
 .dashboard .news p {
@@ -1054,7 +1054,7 @@ h6 {
 .faq .basic h6 {
   font-size: 18px;
   font-weight: 600;
-  color: #e89506;
+  color: #064ee8;
 }
 
 .faq .basic p {
@@ -1071,7 +1071,7 @@ h6 {
 .contact .info-box i {
   font-size: 38px;
   line-height: 0;
-  color: #e89506;
+  color: #064ee8;
 }
 
 .contact .info-box h3 {
@@ -1138,7 +1138,7 @@ h6 {
 
 .contact .php-email-form input:focus,
 .contact .php-email-form textarea:focus {
-  border-color: #e89506;
+  border-color: #064ee8;
 }
 
 .contact .php-email-form input {
@@ -1150,7 +1150,7 @@ h6 {
 }
 
 .contact .php-email-form button[type=submit] {
-  background: #e89506;
+  background: #064ee8;
   border: 0;
   padding: 10px 30px;
   color: #fff;
@@ -1182,7 +1182,7 @@ h6 {
 .error-404 h1 {
   font-size: 180px;
   font-weight: 700;
-  color: #e89506;
+  color: #064ee8;
   margin-bottom: 0;
   line-height: 150px;
 }

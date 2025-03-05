@@ -151,9 +151,9 @@
                           <td><%=listVol[n].getPrix_business() %></td>
                           <td><%=listVol[n].getDate_limite_reservation() %></td>
                           <td><%=listVol[n].getReduction() %></td>
-                          <td><%=listVol[n].getReduction() %></td>
                           <td><%=listVol[n].getPro_max_eco() %></td>
                           <td><%=listVol[n].getPro_max_bus() %></td>
+                          <td><%=listVol[n].getDisponible() %></td>
                         </tr>
                       <%}%>
                     </tbody>
