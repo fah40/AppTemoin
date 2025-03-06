@@ -57,9 +57,9 @@
                         <thead>
                           <tr>
                             <th scope="col">-</th>
-                            <th scope="col">#ref-Avion</th>
-                            <th scope="col">Ville depart</th>
-                            <th scope="col">destination</th>
+                            <th scope="col"><i class="fa fa-plane"></i> Avion</th>
+                            <th scope="col"><i class="fa fa-plane-departure"></i></th>
+                            <th scope="col"><i class="fa fa-plane-arrival"></i></th>
                             <th scope="col">date depart</th>
                             <th scope="col">date arrivee</th>
                             <th scope="col">prix business</th>

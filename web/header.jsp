@@ -65,3 +65,10 @@
   </aside><!-- End Sidebar-->
 
   <main id="main" class="main">
+  <div class="d-flex">
+      <img src="assets/img/logo.png" alt="" width="5%" height="auto">
+    <a class="logo d-flex align-items-center">
+      <span class="d-none d-lg-block">Let's Fly</span>
+    </a>
+    <i class="bi bi-list toggle-sidebar-btn" style="font-size:50px;"></i>
+  </div><br>

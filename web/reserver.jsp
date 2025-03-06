@@ -55,7 +55,7 @@
                       </table>
 
                   <!-- End Default Table Example -->
-                <h3 class="alert alert-warning">Reservation</h3>
+                <h3 class="alert alert-success">Reservation</h3>
                 <h3>Nom : <b><%= user.getNom() %></b></h3>
 
                   <!-- Multi Columns Form -->
@@ -71,8 +71,13 @@
                           <label for="inputNombre" class="form-label">Nombre de places</label>
                           <input type="number" class="form-control" id="inputNombre" name="reservation.nombre" min="1">
                       </div>
-                      <div class="col-md-9"></div>
+
+                      <div class="col-md-6"></div>
                       
+                      <div class="col-md-3">
+                          <label for="inputDateReservation" class="form-label">Date de reservation</label>
+                          <input type="file" class="form-control" id="inputDateReservation" name="reservation.file">
+                      </div>
 
                       <!-- type siege -->
                       <div class="col-md-3">
@@ -95,7 +100,7 @@
 
                       <!-- Boutons d'action -->
                       <div class="text-center">
-                          <button type="submit" class="btn btn-success">Reserver</button>
+                          <button type="submit" class="btn btn-primary">Reserver</button>
                           <button type="reset" class="btn btn-secondary">Reset</button>
                       </div>
                   </form>
