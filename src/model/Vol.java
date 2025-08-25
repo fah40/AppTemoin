@@ -25,6 +25,7 @@ public class Vol {
     private Avion avion;
     private Ville ville_depart;
     private Ville ville_arrivee;
+    private HistoPrix histoPrix;
 
     public Vol() {
     }
@@ -42,6 +43,14 @@ public class Vol {
         setPrix_business(prix_business);
         setDate_limite_reservation(date_limite_reservation);
         setDisponible(disponible);
+    }
+
+    public HistoPrix getHistoPrix() {
+        return histoPrix;
+    }
+
+    public void setHistoPrix(HistoPrix histoPrix) {
+        this.histoPrix = histoPrix;
     }
 
     public java.sql.Timestamp getInsert_date() {
@@ -258,21 +267,26 @@ public class Vol {
         setDisponible(toSet);
     }
 
+    public void setHistoPrix(Connection con) throws Exception {
+        HistoPrix prix= HistoPrix.getByIdVol(this.id, con);
+        histoPrix = prix;
+    }
+
     public static Vol getById(int id, Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
         Vol instance = null;
-    
+
         try {
             // Requête SQL pour récupérer un vol par son ID
             String query = "SELECT * FROM vol WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
-    
+
             if (rs.next()) {
                 instance = new Vol();
-    
+
                 // Remplissage des attributs de l'objet Vol
                 instance.setId(rs.getInt("id"));
                 instance.setNumero_vol(rs.getString("numero_vol"));
@@ -284,12 +298,10 @@ public class Vol {
                 instance.setPrix_economique(rs.getDouble("prix_economique"));
                 instance.setPrix_business(rs.getDouble("prix_business"));
                 instance.setDate_limite_reservation(rs.getTimestamp("date_limite_reservation"));
-                instance.setReduction(rs.getDouble("reduction"));
-                instance.setPro_max_eco(rs.getInt("mx_eco")); // mx_eco dans la table
-                instance.setPro_max_bus(rs.getInt("mx_bus")); // mx_bus dans la table
                 instance.setInsert_date(rs.getTimestamp("insert_date"));
                 instance.setDisponible(rs.getBoolean("disponible"));
-    
+                instance.setHistoPrix(con);
+                
                 // Récupération des objets associés (Avion et Ville)
                 instance.setAvion(Avion.getById(rs.getInt("id_avion"), con));
                 instance.setVille_depart(Ville.getById(rs.getInt("id_ville_depart"), con));
@@ -304,7 +316,7 @@ public class Vol {
             if (st != null)
                 st.close();
         }
-    
+
         return instance;
     }
 
@@ -330,14 +342,12 @@ public class Vol {
                 item.setPrix_economique(rs.getDouble("prix_economique"));
                 item.setPrix_business(rs.getDouble("prix_business"));
                 item.setDate_limite_reservation(rs.getTimestamp("date_limite_reservation"));
-                item.setReduction(rs.getDouble("reduction"));
-                item.setPro_max_eco(rs.getInt("mx_eco"));
-                item.setPro_max_bus(rs.getInt("mx_bus"));
                 item.setInsert_date(rs.getTimestamp("insert_date"));
                 item.setDisponible(rs.getBoolean("disponible"));
                 item.setAvion(Avion.getById(rs.getInt("id_avion"), con));
                 item.setVille_depart(Ville.getById(rs.getInt("id_ville_depart"), con));
                 item.setVille_arrivee(Ville.getById(rs.getInt("id_ville_arrivee"), con));
+                item.setHistoPrix(con);
 
                 items.add(item);
             }
@@ -353,18 +363,19 @@ public class Vol {
         return items.toArray(new Vol[0]);
     }
 
-    public void insert(Connection con) throws Exception {
+    public int insert(Connection con) throws Exception {
         PreparedStatement st = null;
         ResultSet rs = null;
+        int generatedId = -1; // Valeur par défaut si aucun ID n'est trouvé
         try {
             // Requête SQL avec tous les champs obligatoires et optionnels
-            String query = "INSERT INTO vol (numero_vol, id_avion, id_ville_depart, id_ville_arrivee, date_depart, date_arrivee, prix_economique, prix_business, date_limite_reservation, reduction, mx_eco, mx_bus) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
+            String query = "INSERT INTO vol (numero_vol, id_avion, id_ville_depart, id_ville_arrivee, date_depart, date_arrivee, prix_economique, prix_business, date_limite_reservation) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
 
             st = con.prepareStatement(query);
 
             // Génération du numéro de vol (si nécessaire)
-            String numeroVol = "VOL-N-" + getNextVolNumber(con); // Assurez-vous que cette méthode est définie
+            String numeroVol = "VOL-N-" + getNextVolNumber(con);
             st.setString(1, numeroVol);
 
             // Remplissage des autres paramètres
@@ -376,23 +387,24 @@ public class Vol {
             st.setDouble(7, this.prix_economique);
             st.setDouble(8, this.prix_business);
             st.setTimestamp(9, this.date_limite_reservation);
-            st.setDouble(10, this.reduction); // Champ optionnel
-            st.setInt(11, this.pro_max_eco); // mx_eco dans la table
-            st.setInt(12, this.pro_max_bus); // mx_bus dans la table
 
             // Exécution de la requête
             rs = st.executeQuery();
 
             // Récupération de l'ID généré
             if (rs.next()) {
-                this.setId(rs.getInt("id"));
+                generatedId = rs.getInt("id");
+                this.setId(generatedId);
                 con.commit(); // Validation de la transaction
             } else {
-                con.rollback(); // Annulation de la transaction en cas d'échec
+                con.rollback();
                 throw new Exception("Failed to retrieve generated ID");
             }
+
+            setHistoPrix(con);
+            
         } catch (Exception e) {
-            con.rollback(); // Annulation de la transaction en cas d'erreur
+            con.rollback();
             throw new Exception("Failed to insert record", e);
         } finally {
             // Fermeture des ressources
@@ -401,6 +413,8 @@ public class Vol {
             if (st != null)
                 st.close();
         }
+
+        return generatedId;
     }
 
     // Fonction pour récupérer le prochain numéro de vol
@@ -427,14 +441,11 @@ public class Vol {
                     + "prix_economique = ?, "
                     + "prix_business = ?, "
                     + "date_limite_reservation = ?, "
-                    + "reduction = ?, "
-                    + "mx_eco = ?, "
-                    + "mx_bus = ?, "
                     + "disponible = ? "
                     + "WHERE id = ?";
-    
+
             st = con.prepareStatement(query);
-    
+
             // Remplissage des paramètres
             st.setString(1, this.numero_vol);
             st.setInt(2, this.idAvion); // Utilisation de idAvion au lieu de avion.getId()
@@ -445,15 +456,12 @@ public class Vol {
             st.setDouble(7, this.prix_economique);
             st.setDouble(8, this.prix_business);
             st.setTimestamp(9, this.date_limite_reservation);
-            st.setDouble(10, this.reduction); // Champ optionnel
-            st.setInt(11, this.pro_max_eco); // mx_eco dans la table
-            st.setInt(12, this.pro_max_bus); // mx_bus dans la table
-            st.setBoolean(13, this.disponible);
-            st.setInt(14, this.getId()); // Clause WHERE
-    
+            st.setBoolean(10, this.disponible);
+            st.setInt(11, this.getId()); // Clause WHERE
+
             // Exécution de la requête
             int rowsUpdated = st.executeUpdate();
-    
+
             // Vérification du succès de la mise à jour
             if (rowsUpdated > 0) {
                 con.commit(); // Validation de la transaction

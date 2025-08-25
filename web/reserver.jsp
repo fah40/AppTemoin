@@ -59,7 +59,7 @@
                 <h3>Nom : <b><%= user.getNom() %></b></h3>
 
                   <!-- Multi Columns Form -->
-                  <form class="row g-3" action="saveReservation" method="post">
+                  <form class="row g-3" action="saveReservation" method="post" enctype="multipart/form-data">
 
                       <input type="hidden" name="id_vol_curr" value="<%= myVol.getId() %>">
                       <input type="hidden" name="reservation.id_user" value="<%= user.getId() %>">
@@ -68,15 +68,20 @@
 
                       <!-- Nombre de places réservées -->
                       <div class="col-md-3">
-                          <label for="inputNombre" class="form-label">Nombre de places</label>
-                          <input type="number" class="form-control" id="inputNombre" name="reservation.nombre" min="1">
+                          <label for="inputNombre" class="form-label">Nombre de places adulte(s)</label>
+                          <input type="number" class="form-control" id="inputNombre" name="reservation.nombreAdulte" min="1">
                       </div>
 
-                      <div class="col-md-6"></div>
+                      <div class="col-md-3">
+                          <label for="inputNombre" class="form-label">Nombre de places enfants(s)</label>
+                          <input type="number" class="form-control" id="inputNombre" name="reservation.nombreEnfant" min="1">
+                      </div>
+
+                      <div class="col-md-3"></div>
                       
                       <div class="col-md-3">
-                          <label for="inputDateReservation" class="form-label">Date de reservation</label>
-                          <input type="file" class="form-control" id="inputDateReservation" name="reservation.file">
+                          <label for="inputDateReservation" class="form-label">votre bulletin de naissance</label>
+                          <input type="file" class="form-control" id="inputDateReservation" name="file">
                       </div>
 
                       <!-- type siege -->

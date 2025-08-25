@@ -40,15 +40,30 @@ public class VolAdminController {
     @Url(url = "AppTemoin/insertVol")
     @RootPage(path = "vol.jsp")
     @AuthMethode(role = {"admin"})
-    public ModelView creatVol(@ObjParam(value = "vol") Vol vol) throws Exception {
+    public ModelView creatVol(
+        @ObjParam(value = "vol") Vol vol, 
+        @RequestParam(value = "prix_economique") double prix_economique, 
+        @RequestParam(value = "prix_business") double prix_business,
+        @RequestParam(value = "date_debut") String date_debut,
+        @RequestParam(value = "date_fin") String date_fin
+        ) throws Exception {
         Connection con= null;
         ModelView model= new ModelView();
+        int idvol= 0;
         model.setUrl("vol.jsp");
         try {
             con= MyConnect.getConnection();
             
-            vol.insert(con);
+            idvol = vol.insert(con);
             
+            HistoPrix prix= new HistoPrix();
+            prix.setDate_debut(date_debut);
+            prix.setDate_fin(date_debut);
+            prix.setPrix_business(prix_business);
+            prix.setPrix_economique(prix_economique);
+            prix.setId_vol(idvol);
+            prix.insert(con);
+
             model.addObject("listAvion", Avion.getAll(con));
             model.addObject("listVille", Ville.getAll(con));
             model.addObject("listVol", Vol.getAll(con));

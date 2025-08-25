@@ -6,10 +6,11 @@ import annotation.*;
 import db.MyConnect;
 import models.*;
 import util.MySession;
+import util.TypeFile;
 import model.*;
 
 @Controller
-@Auth(role = {"admin","client"})
+@Auth(role = { "admin", "client" })
 public class ReservationController {
     MySession session = new MySession();
 
@@ -17,17 +18,56 @@ public class ReservationController {
     @Url(url = "AppTemoin/reservation")
     @RootPage(path = "reservation.jsp")
     public ModelView showAllVol() throws Exception {
-        Connection con= null;
-        ModelView model= new ModelView();
+        Connection con = null;
+        ModelView model = new ModelView();
+
+        User user = (User) session.get("user");
+        String role = (String) session.get("role");
         try {
-            con= MyConnect.getConnection();
+            con = MyConnect.getConnection();
             model.addObject("listAvion", Avion.getAll(con));
             model.addObject("listVille", Ville.getAll(con));
             model.addObject("listVol", Vol.getAll(con));
+
+            if (role.equals("admin")) {
+                model.addObject("listReservation", Reservation.getAll(con));
+            } else {
+                model.addObject("listReservation", Reservation.getAllById(con, user.getId()));
+            }
+
             model.setUrl("reservation.jsp");
         } catch (Exception e) {
             e.printStackTrace();
-        }finally{
+        } finally {
+            if (con != null) {
+                con.close();
+            }
+        }
+
+        return model;
+    }
+
+    @Get
+    @Url(url = "AppTemoin/mesReservation")
+    public ModelView showAllResa() throws Exception {
+        Connection con = null;
+        ModelView model = new ModelView();
+
+        User user = (User) session.get("user");
+        String role = (String) session.get("role");
+        try {
+            con = MyConnect.getConnection();
+
+            if (role.equals("admin")) {
+                model.addObject("listReservation", Reservation.getAll(con));
+            } else {
+                model.addObject("listReservation", Reservation.getAllById(con, user.getId()));
+            }
+
+            model.setUrl("mesReservation.jsp");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
             if (con != null) {
                 con.close();
             }
@@ -40,17 +80,17 @@ public class ReservationController {
     @Url(url = "AppTemoin/reserver")
     @RootPage(path = "reserver.jsp")
     public ModelView getChoosedVol(@RequestParam(value = "idVol") int idVol) throws Exception {
-        Connection con= null;
-        ModelView model= new ModelView();
+        Connection con = null;
+        ModelView model = new ModelView();
         try {
-            con= MyConnect.getConnection();
-            model.addObject("myVol", Vol.getById(idVol,con));
+            con = MyConnect.getConnection();
+            model.addObject("myVol", Vol.getById(idVol, con));
             model.addObject("typeSiege", Siege_type.getAll(con));
-            
+
             model.setUrl("reserver.jsp");
         } catch (Exception e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             if (con != null) {
                 con.close();
             }
@@ -58,23 +98,51 @@ public class ReservationController {
         return model;
     }
 
+    @Get
+    @RestAPI
+    @Url(url = "AppTemoin/exporter")
+    @AuthMethode(role = { "admin", "client" })
+    public Reservation exporter(@RequestParam(value = "idRes") int idRes) throws Exception {
+        Connection con = null;
+        Reservation res = null;
+
+        try {
+            con = MyConnect.getConnection();
+            res = Reservation.getById(idRes, con);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (con != null) {
+                con.close();
+            }
+        }
+        return res;
+    }
+
     @Post
     @Url(url = "AppTemoin/saveReservation")
     @RootPage(path = "reserver.jsp")
-    @AuthMethode(role = {"client"})
-    public ModelView creatReservation(@ObjParam(value = "reservation") Reservation reservation,@RequestParam(value = "id_vol_curr") int id_vol_curr) throws Exception {
-        Connection con= null;
-        ModelView model= new ModelView();
+    @AuthMethode(role = { "client" })
+    public ModelView creatReservation(@ObjParam(value = "reservation") Reservation reservation,
+            @RequestParam(value = "id_vol_curr") int id_vol_curr, @RequestParam(value = "file") TypeFile file)
+            throws Exception {
+        Connection con = null;
+        ModelView model = new ModelView();
         try {
-            con= MyConnect.getConnection();
-            Vol curVol = Vol.getById(id_vol_curr,con);
+            String projectDir = System.getProperty("catalina.home") + "/webapps/AppTemoin/uploads/";
+            String uploadsDir = ".\\uploads\\";
+            file.reconstitute(projectDir);
+
+            reservation.setFile(uploadsDir + file.getFilename());
+            con = MyConnect.getConnection();
+            Vol curVol = Vol.getById(id_vol_curr, con);
             if (reservation.getDate_reservation().before(curVol.getDate_limite_reservation())) {
-                reservation.insertCorrectly(con,id_vol_curr);
+                reservation.insertCorrectly(con, id_vol_curr);
                 model.addObject("myVol", curVol);
                 model.addObject("typeSiege", Siege_type.getAll(con));
                 model.addObject("listReservation", Reservation.getAll(con));
                 model.setUrl("reserver.jsp");
-            }else{
+            } else {
                 model.addObject("error", "date limite reservation depasse !");
                 model.setUrl("error.jsp");
             }
@@ -82,7 +150,7 @@ public class ReservationController {
         } catch (Exception e) {
             model.addObject("error", e.getMessage());
             model.setUrl("error.jsp");
-        }finally{
+        } finally {
             if (con != null) {
                 con.close();
             }

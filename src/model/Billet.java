@@ -243,7 +243,7 @@ public class Billet {
         int rep = 0;
 
         try {
-            String query = "SELECT count(*) as sumres FROM billet WHERE id_type = ?";
+            String query = "SELECT COALESCE(count(*),0) as sumres FROM billet WHERE id_type = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();

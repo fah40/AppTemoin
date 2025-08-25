@@ -1,3 +1,5 @@
+<%@page import="java.util.*"%>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -64,19 +66,47 @@
                     <p class="text-center small">Entrer votre E-mail et mot de passe</p>
                   </div>
 
+                  <%
+                        HashMap<String, String> error=new HashMap<>();
+                        HashMap<String, String> value=new HashMap<>();
+                      if(request.getAttribute("error") != null ){
+                          error =(HashMap<String, String>) request.getAttribute("error");
+                          value =(HashMap<String, String>) request.getAttribute("value");
+                      }
+                  %>
+
                   <form class="row g-3" action="login" method="POST">
 
                     <div class="col-12">
-                      <label for="email" class="form-label">e-mail</label>
-                      <div class="input-group has-validation">
-                        <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="email" name="email" class="form-control" id="email">
-                      </div>
+                      <% if (error.get("email") != null){ %>
+                        <p class="alert alert-danger alert-dismissible fade show"><%= error.get("email") %></p>
+                        <label for="email" class="form-label">e-mail</label>
+                        <div class="input-group has-validation">
+                          <span class="input-group-text" id="inputGroupPrepend">@</span>
+                          <input type="email" name="email" class="form-control" value="<%= value.get("email") %>" id="email">
+                        </div>
+                      <% }else{ %>
+                        <label for="email" class="form-label">e-mail</label>
+                        <div class="input-group has-validation">
+                          <span class="input-group-text" id="inputGroupPrepend">@</span>
+                          <input type="email" name="email" class="form-control" id="email">
+                        </div>
+                      <% } %>
                     </div>
 
                     <div class="col-12">
-                      <label for="yourPassword" class="form-label">Password</label>
-                      <input type="password" name="mdp" class="form-control" id="yourPassword">
+                      <% if (error.get("mdp") != null){ %>
+                        <p class="alert alert-danger alert-dismissible fade show"><%= error.get("mdp") %></p>
+                        <div class="col-12">
+                          <label for="yourPassword" class="form-label">Password</label>
+                          <input type="password" name="mdp" value="<%= value.get("mdp") %>" class="form-control" id="yourPassword">
+                        </div>
+                      <% }else{ %>
+                        <div class="col-12">
+                          <label for="yourPassword" class="form-label">Password</label>
+                          <input type="password" name="mdp" class="form-control" id="yourPassword">
+                        </div>
+                      <% } %>
                     </div>
 
                     <div class="col-12">

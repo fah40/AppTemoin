@@ -1,14 +1,19 @@
 package model;
 import java.sql.*;
 import java.util.*;
+
 import db.MyConnect;
 import use.*;
+
 public class User {
     private int id;
     private String nom;
     private String email;
     private String password;
     private String role;
+
+    private model.Role userRole;
+
     public User(){}
     public User(String nom,String email,String password,String role,Connection con) throws Exception{
         setNom(nom); 
@@ -16,6 +21,15 @@ public class User {
         setPassword(password); 
         setRole(role); 
     }
+
+
+    public model.Role getUserRole() {
+        return userRole;
+    }
+    public void setUserRole(model.Role userRole) {
+        this.userRole = userRole;
+    }
+
     public int getId() {
         return id;
     }
@@ -73,7 +87,7 @@ public class User {
         User instance = null;
 
         try {
-            String query = "SELECT * FROM users WHERE id = ?";
+            String query = "SELECT * FROM user_roles WHERE id = ?";
             st = con.prepareStatement(query);
             st.setInt(1, id);
             rs = st.executeQuery();
@@ -85,6 +99,7 @@ public class User {
                 instance.setEmail(rs.getString("email"));
                 instance.setPassword(rs.getString("password"));
                 instance.setRole(rs.getString("role"));
+                instance.setUserRole(model.Role.getRoleById(rs.getInt("role_id"), con));
             }
         } catch (Exception e) {
             throw e ;
@@ -102,7 +117,7 @@ public class User {
         User instance = null;
     
         try {
-            String query = "SELECT * FROM users WHERE email = ? AND password = crypt(?, password)";
+            String query = "SELECT * FROM user_roles WHERE email = ? AND password = crypt(?, password)";
             st = con.prepareStatement(query);
             st.setString(1, email);
             st.setString(2, pass);
@@ -115,6 +130,7 @@ public class User {
                 instance.setEmail(rs.getString("email"));
                 instance.setPassword(rs.getString("password")); // En général, on ne stocke pas le password récupéré
                 instance.setRole(rs.getString("role"));
+                instance.setUserRole(model.Role.getRoleById(rs.getInt("role_id"), con));
             }
         } catch (Exception e) {
             throw e;
@@ -134,7 +150,7 @@ public class User {
         List<User> items = new ArrayList<>();
 
         try {
-            String query = "SELECT * FROM users order by id asc ";
+            String query = "SELECT * FROM user_roles order by id asc ";
             st = con.prepareStatement(query);
             rs = st.executeQuery();
 
@@ -145,6 +161,7 @@ public class User {
                 item.setEmail(rs.getString("email"));
                 item.setPassword(rs.getString("password"));
                 item.setRole(rs.getString("role"));
+                item.setUserRole(model.Role.getRoleById(rs.getInt("role_id"), con));
                 items.add(item);
             }
         } catch (Exception e) {
@@ -161,12 +178,11 @@ public class User {
         PreparedStatement st = null;
         ResultSet rs = null;
         try {
-            String query = "INSERT INTO users (nom, email, password, role) VALUES (?, ?, ?, ?) RETURNING id";
+            String query = "INSERT INTO users (nom, email, password) VALUES (?, ?, ?) RETURNING id";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setString(2, this.email);
             st.setString(3, this.password);
-            st.setString(4, this.role);
             try {
                 rs = st.executeQuery();
                 if (rs.next()) {
@@ -190,12 +206,11 @@ public class User {
     public void update(Connection con) throws Exception {
         PreparedStatement st = null;
         try {
-            String query = "UPDATE users SET nom = ?, email = ?, password = ?, role = ? WHERE id = ?";
+            String query = "UPDATE users SET nom = ?, email = ?, password = ? WHERE id = ?";
             st = con.prepareStatement(query);
             st.setString(1, this.nom);
             st.setString(2, this.email);
             st.setString(3, this.password);
-            st.setString(4, this.role);
             st.setInt(5, this.getId());
             try {
                 st.executeUpdate();

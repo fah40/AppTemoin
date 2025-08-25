@@ -14,15 +14,13 @@
         <div class="col-lg-12">
           <div class="row">
 
-        <!-- top side columns -->
         <div class="col-lg-12">
            <div class="card">
                 <div class="card-body">
-                  <!-- Multi Columns Form -->
+
                   <form class="row g-3" action="insertVol" method="post">
                     <h5 class="card-title">Insertion vol</h5>
 
-                    <!-- S&eacute;lection de l'avion -->
                     <div class="col-md-12">
                         <label for="idAvion" class="form-label">Avion</label>
                         <select id="idAvion" class="form-select" name="vol.idAvion">
@@ -33,7 +31,6 @@
                         </select>
                     </div>
 
-                    <!-- S&eacute;lection de la ville de d&eacute;part -->
                     <div class="col-md-6">
                         <label for="id_ville_depart" class="form-label">Ville d&eacute;part</label>
                         <select id="id_ville_depart" class="form-select" name="vol.id_ville_depart">
@@ -44,7 +41,6 @@
                         </select>
                     </div>
 
-                    <!-- S&eacute;lection de la ville d'arriv&eacute;e -->
                     <div class="col-md-6">
                         <label for="id_ville_arrivee" class="form-label">Ville destination</label>
                         <select id="id_ville_arrivee" class="form-select" name="vol.id_ville_arrivee">
@@ -55,57 +51,58 @@
                         </select>
                     </div>
 
-                    <!-- Date de d&eacute;part -->
                     <div class="col-md-6">
                         <label for="date_depart" class="form-label">Date d&eacute;part</label>
                         <input type="datetime-local" class="form-control" id="date_depart" name="vol.date_depart">
                     </div>
 
-                    <!-- Date d'arriv&eacute;e -->
                     <div class="col-md-6">
                         <label for="date_arrivee" class="form-label">Date arriv&eacute;e</label>
                         <input type="datetime-local" class="form-control" id="date_arrivee" name="vol.date_arrivee">
                     </div>
 
-                    <!-- Prix &eacute;conomique -->
                     <div class="col-md-6">
                         <label for="prix_economique" class="form-label">Prix &eacute;conomique</label>
                         <input type="number" class="form-control" id="prix_economique" name="vol.prix_economique">
                     </div>
 
-                    <!-- Prix business -->
                     <div class="col-md-6">
                         <label for="prix_business" class="form-label">Prix business</label>
                         <input type="number" class="form-control" id="prix_business" name="vol.prix_business">
                     </div>
 
-                    <!-- Date limite de r&eacute;servation -->
                     <div class="col-md-6">
                         <label for="date_limite_reservation" class="form-label">Date limite r&eacute;servation</label>
                         <input type="datetime-local" class="form-control" id="date_limite_reservation" name="vol.date_limite_reservation">
                     </div>
 
-                    <!-- R&eacute;duction -->
+                    <div class="col-md-6"></div>
+                    
+                    <div class="col-md-12"><hr></div>
+                    <div class="col-md-12 text-center"><h3>Promotion</h3></div>
+
                     <div class="col-md-6">
-                        <label for="reduction" class="form-label">R&eacute;duction</label>
-                        <input type="number" step="0.01" class="form-control" id="reduction" name="vol.reduction">
+                        <label for="prix_economique" class="form-label">Prix &eacute;conomique</label>
+                        <input type="number" class="form-control" id="prix_economique" name="prix_economique">
                     </div>
 
-                    <!-- Nombre maximum de si&egrave;ges &eacute;conomiques -->
                     <div class="col-md-6">
-                        <label for="pro_max_eco" class="form-label">Nombre max promo &eacute;conomiques</label>
-                        <input type="number" class="form-control" id="pro_max_eco" name="vol.pro_max_eco">
+                        <label for="prix_business" class="form-label">Prix business</label>
+                        <input type="number" class="form-control" id="prix_business" name="prix_business">
                     </div>
 
-                    <!-- Nombre maximum de si&egrave;ges business -->
                     <div class="col-md-6">
-                        <label for="pro_max_bus" class="form-label">Nombre max promo business</label>
-                        <input type="number" class="form-control" id="pro_max_bus" name="vol.pro_max_bus">
+                        <label for="date_limite_reservation" class="form-label">Date d&eacute;but</label>
+                        <input type="datetime-local" class="form-control" id="date_limite_reservation" name="date_debut">
                     </div>
 
-                    <!-- Boutons de soumission et de r&eacute;initialisation -->
+                    <div class="col-md-6">
+                        <label for="date_limite_reservation" class="form-label">Date fin</label>
+                        <input type="datetime-local" class="form-control" id="date_limite_reservation" name="date_fin">
+                    </div>
+
                     <div class="text-center">
-                        <button type="submit" class="btn btn-warning">Save</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
                         <button type="reset" class="btn btn-secondary">Reset</button>
                     </div>
                 </form>
@@ -120,7 +117,7 @@
                 <div class="card-body">
                   <h5 class="card-title" >liste vol</h5>
                   <!-- Default Table -->
-                  <table class="table">
+                  <table class="table" style="font-size: 13px;">
                     <thead>
                       <tr>
                           <th scope="col">#ref-vol</th>
@@ -129,13 +126,10 @@
                           <th scope="col">Destination</th>
                           <th scope="col">Date d&eacute;part</th>
                           <th scope="col">Date arriv&eacute;e</th>
-                          <th scope="col">Prix business</th>
-                          <th scope="col">Prix &eacute;conomique</th>
+                          <%-- <th scope="col">Prix business</th>
+                          <th scope="col">Prix &eacute;conomique</th> --%>
                           <th scope="col">Date limite r&eacute;servation</th>
-                          <th scope="col">R&eacute;duction</th>
-                          <th scope="col">Si&egrave;ges max &eacute;co</th>
-                          <th scope="col">Si&egrave;ges max bus</th>
-                          <th scope="col">Disponible</th>
+                          <th scope="col">prix</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -147,17 +141,61 @@
                           <td><%=listVol[n].getVille_arrivee().getNom() %></td>
                           <td><%=listVol[n].getDate_depart() %></td>
                           <td><%=listVol[n].getDate_arrivee() %></td>
-                          <td><%=listVol[n].getPrix_economique() %></td>
-                          <td><%=listVol[n].getPrix_business() %></td>
+                          <%-- <td><%=listVol[n].getPrix_economique() %></td>
+                          <td><%=listVol[n].getPrix_business() %></td> --%>
                           <td><%=listVol[n].getDate_limite_reservation() %></td>
-                          <td><%=listVol[n].getReduction() %></td>
-                          <td><%=listVol[n].getPro_max_eco() %></td>
-                          <td><%=listVol[n].getPro_max_bus() %></td>
-                          <td><%=listVol[n].getDisponible() %></td>
+                          <td>
+                            <!-- Bouton PROM -->
+                            <button type="button" 
+                                    class="btn btn-info btn-sm prom-btn"
+                                    data-business="<%=listVol[n].getPrix_business()%>"
+                                    data-eco="<%=listVol[n].getPrix_economique()%>"
+                                    data-promb="<%=listVol[n].getHistoPrix().getPrix_business()%>"
+                                    data-prome="<%=listVol[n].getHistoPrix().getPrix_economique()%>"
+                                    data-dtd="<%=listVol[n].getHistoPrix().getDate_debut()%>"
+                                    data-dtf="<%=listVol[n].getHistoPrix().getDate_fin()%>"
+                                    
+                                    >
+                              Prom
+                            </button>
+                          </td>
                         </tr>
                       <%}%>
                     </tbody>
                   </table>
+
+                  <div id="floatingTable" 
+                   style="display:none; position:absolute; background:white; padding:20px; font-size:13px; z-index: 9999 !important; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <table class="table mb-0">
+                      <thead>
+                        <tr>
+                          <th>Prix Business</th>
+                          <th>Prix &eacute;conomique</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td id="prixBusiness"></td>
+                          <td id="prixEco"></td>
+                        </tr>
+                        <tr>
+                          <td class="text-center" colspan="2">Promotion</td>
+                        </tr>
+                        <tr>
+                          <td id="promb"></td>
+                          <td id="prome"></td>
+                        </tr>
+                        <tr>
+                          <td class="text-center" colspan="2">date limite</td>
+                        </tr>
+                        <tr>
+                          <td id="dtd"></td>
+                          <td id="dtf"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
                   <!-- End Default Table Example -->
                 </div>
               </div>
@@ -169,6 +207,55 @@
 
       </div>
     </section>
+<!-- Script pour gérer l'affichage flottant -->
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const promButtons = document.querySelectorAll(".prom-btn");
+    const floatingTable = document.getElementById("floatingTable");
+    const prixBusiness = document.getElementById("prixBusiness");
+    const prixEco = document.getElementById("prixEco");
+    const promB = document.getElementById("promb");
+    const promE = document.getElementById("prome");
+    const dtd = document.getElementById("dtd");
+    const dtf = document.getElementById("dtf");
+
+    function showFloatingTable(btn) {
+      prixBusiness.textContent = btn.dataset.business;
+      prixEco.textContent = btn.dataset.eco;
+      promB.textContent = btn.dataset.promb;
+      promE.textContent = btn.dataset.prome;
+      dtd.textContent = btn.dataset.dtd;
+      dtf.textContent = btn.dataset.dtf;
+
+      const rect = btn.getBoundingClientRect();
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+
+      floatingTable.style.left = 650 + "px";
+      floatingTable.style.top = 20 + "px";
+      floatingTable.style.display = "block";
+    }
+
+    promButtons.forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (floatingTable.style.display === "block" && 
+            prixBusiness.textContent === btn.dataset.business && 
+            prixEco.textContent === btn.dataset.eco) {
+          floatingTable.style.display = "none";
+        } else {
+          showFloatingTable(btn);
+        }
+      });
+    });
+
+    document.addEventListener("click", () => {
+      floatingTable.style.display = "none";
+    });
+  });
+  </script>
+
+
 
 
 <%@ include file="footer.jsp" %>

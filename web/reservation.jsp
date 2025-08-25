@@ -2,6 +2,7 @@
 <%@page import="model.Vol"%>
 <%@page import="model.Avion"%>
 <%@page import="model.Ville"%>
+<%@page import="model.Reservation"%>
 
 <%
   Vol[] listVol=(Vol[]) request.getAttribute("listVol");
@@ -57,27 +58,21 @@
                         <thead>
                           <tr>
                             <th scope="col">-</th>
-                            <th scope="col"><i class="fa fa-plane"></i> Avion</th>
-                            <th scope="col"><i class="fa fa-plane-departure"></i></th>
-                            <th scope="col"><i class="fa fa-plane-arrival"></i></th>
-                            <th scope="col">date depart</th>
-                            <th scope="col">date arrivee</th>
-                            <th scope="col">prix business</th>
-                            <th scope="col">prix economique</th>
-                            <th scope="col">date limite reservation</th>
+                            <th scope="col"><i class="fas fa-plane-departure"></i> ville depart</th>
+                            <th scope="col"><i class="fas fa-plane-arrival"></i> destination</th>
+                            <th scope="col"><i class="fas fa-calendar-check"></i> date depart</th>
+                            <th scope="col"><i class="fas fa-calendar-check"></i> date arrivee</th>
+                            <th scope="col"> <i class="fas fa-calendar-minus"></i> date limite reservation</th>
                           </tr>
                         </thead>
                         <tbody>
                           <% for(int n=0;n< listVol.length;n++) {%>
                             <tr>
                               <th scope="row"><a class="btn btn-primary" href="reserver?idVol=<%=listVol[n].getId() %>">reserver</a></th>
-                              <th scope="row"><%=listVol[n].getAvion().getModele() %></th>
                               <td><%=listVol[n].getVille_depart().getNom() %></td>
                               <td><%=listVol[n].getVille_arrivee().getNom() %></td>
                               <td><%=listVol[n].getDate_depart() %></td>
                               <td><%=listVol[n].getDate_arrivee() %></td>
-                              <td><%=listVol[n].getPrix_economique() %></td>
-                              <td><%=listVol[n].getPrix_business() %></td>
                               <td><%=listVol[n].getDate_limite_reservation() %></td>
                             </tr>
                           <% } %>

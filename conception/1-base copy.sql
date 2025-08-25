@@ -52,7 +52,10 @@ CREATE TABLE vol (
     prix_economique DECIMAL(12,2) NOT NULL,
     prix_business DECIMAL(12,2) NOT NULL,
     date_limite_reservation TIMESTAMP NOT NULL,
+    reduction DECIMAL(12,2),
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    mx_eco INT,
+    mx_bus INT,
     disponible BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_avion) REFERENCES avion(id),
     FOREIGN KEY (id_ville_depart) REFERENCES ville(id),
@@ -60,14 +63,14 @@ CREATE TABLE vol (
 );
 
 CREATE TABLE histo_prix (
-    id serial PRIMARY KEY,
+    id serial PRIMARY KEY
     id_vol INT NOT NULL,
     prix_economique DECIMAL(12,2) NOT NULL,
     prix_business DECIMAL(12,2) NOT NULL,
     date_debut TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     date_fin TIMESTAMP DEFAULT NULL,
     FOREIGN KEY (id_vol) REFERENCES vol(id)
-);
+)
 
 CREATE TABLE configuration (
     cle VARCHAR(200) PRIMARY KEY,

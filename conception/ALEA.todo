@@ -1,0 +1,35 @@
+- le reservation peut etre paye ou pas
+- changement sur le processus de prix :
+    - le prix d'un vol est rattacher a un date boutoir
+- au moment de paiement, on verifie si un prix est toujours valide 
+- si la date de paiement est comprise dans la date de boutoir du prix, alors le paiement est valide
+- si la date de paiement est apres la date de boutoir du prix, alors le paiement n'est pas valide
+
+[BACK]
+METIER :
+    ✔ Modifier la base de donnee: @done(25-08-25 18:38)
+    ✔ Vol @done(25-08-25 20:44)
+    - Reservation
+    - prix
+    - Modifier le controller
+    
+    ☐ Modifier les condition d'insertion reservation 
+        - 1 reservation = 1 billet
+        - reservation separe du paiement
+        - check date de butoir
+
+[FRONT]
+
+BACKOFFICE :
+    ☐
+    
+FRONTOFFICE :
+    ✔ ajouter une formulaire d'ajout de prix en desous de la formulaire vol @done(25-08-25 20:43)
+    ☐ ajouter une formulaire de paiement sur la liste des reservation / statut paye ou pas
+    ☐ Afficher le chiffre d'affaire : total paye / total non paye
+    
+
+
+
+
+
